@@ -1,5 +1,3 @@
-# modules/cognito/variables.tf
-
 variable "environment" {
   description = "Environment name (dev, prod, etc.)"
   type        = string

@@ -1,5 +1,3 @@
-# modules/cognito/main.tf
-
 resource "aws_cognito_user_pool" "main" {
   name = "${var.environment}-${var.project_name}-user-pool"
 
