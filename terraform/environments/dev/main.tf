@@ -7,16 +7,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-
-  backend "s3" {
-    bucket = "your-terraform-state-bucket"  # 実際のバケット名に変更
-    key    = "dev/terraform.tfstate"
-    region = "ap-northeast-1"
-    
-    # State Lock用DynamoDBテーブル
-    dynamodb_table = "terraform-state-lock"
-    encrypt        = true
-  }
 }
 
 provider "aws" {
