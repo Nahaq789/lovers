@@ -16,7 +16,7 @@ type CognitoClient struct {
 func InitCognitoClient(ctx context.Context, l slog.Logger) (*CognitoClient, error) {
 	sdkConfig, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		l.ErrorContext(ctx, "failed init cognito client", err)
+		l.ErrorContext(ctx, "failed init cognito client", "error", err)
 		return nil, err
 	}
 
