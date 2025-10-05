@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"lovers/cmd/di/aws"
 	"lovers/internal/shared/infrastructure/logger"
 	"net/http"
 	"os"
@@ -23,6 +24,13 @@ func main() {
 	logger := slog.New(contextHandler)
 	slog.SetDefault(logger)
 
+	ctx := context.Background()
+	_, err := aws.Initialize(ctx, logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to init aws client", "error", err)
+		return
+	}
+
 	r := gin.Default()
 	Router(r)
 	server := &http.Server{Addr: ":8080", Handler: r.Handler()}
@@ -36,16 +44,16 @@ func main() {
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		<-c
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		shutdownCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
 
-		if err := server.Shutdown(ctx); err != nil {
-			logger.InfoContext(ctx, "HTTP Server Shutdown", "error", err)
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			logger.InfoContext(shutdownCtx, "HTTP Server Shutdown", "error", err)
 		}
 		wg.Done()
 	}()
 
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logger.ErrorContext(context.Background(), "HTTP server ListenAndServe", "error", err)
+		logger.ErrorContext(ctx, "HTTP server ListenAndServe", "error", err)
 	}
 }
