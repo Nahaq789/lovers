@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"lovers/cmd/di/aws"
 	"lovers/internal/shared/infrastructure/logger"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,7 +25,9 @@ func main() {
 	logger := slog.New(contextHandler)
 	slog.SetDefault(logger)
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	_, err := aws.Initialize(ctx, logger)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to init aws client", "error", err)
@@ -33,7 +36,12 @@ func main() {
 
 	r := gin.Default()
 	Router(r)
-	server := &http.Server{Addr: ":8080", Handler: r.Handler()}
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: r.Handler(),
+		BaseContext: func(net.Listener) context.Context {
+			return ctx
+		}}
 
 	var wg sync.WaitGroup
 	wg.Add(1)
