@@ -2,7 +2,7 @@
     go run ./...
 
 @test:
-    go test ./...
+    go test ./... -cover
 
 @deploy:
     cd ./terraform/environments/dev/ && \
