@@ -1,4 +1,4 @@
-package user
+package email
 
 import (
 	"testing"
