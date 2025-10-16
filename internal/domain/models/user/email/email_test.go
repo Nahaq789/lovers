@@ -335,3 +335,16 @@ func TestNewEmailReturnsPointer(t *testing.T) {
 		t.Error("NewEmail should return different pointers for different calls")
 	}
 }
+
+func TestGetValue(t *testing.T) {
+	email, err := NewEmail("test1@example.com")
+	if err != nil {
+		t.Fatalf("Unexpected errors: %v", err)
+	}
+
+	value := email.GetValue()
+	expected := "test1@example.com"
+	if value != expected {
+		t.Errorf("GetValue() returned %v, want %v", value, expected)
+	}
+}
