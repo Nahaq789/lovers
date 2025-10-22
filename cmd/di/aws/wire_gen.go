@@ -20,8 +20,13 @@ func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {
 	if err != nil {
 		return nil, err
 	}
+	parameterStoreClient, err := aws.InitParameterStoreClient(ctx, logger)
+	if err != nil {
+		return nil, err
+	}
 	awsSet := &AwsSet{
-		Cognito: cognitoClient,
+		Cognito:        cognitoClient,
+		ParameterStore: parameterStoreClient,
 	}
 	return awsSet, nil
 }
@@ -30,6 +35,9 @@ func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {
 
 var cognitoSet = wire.NewSet(aws.InitCognitoClient)
 
+var parameterStoreSet = wire.NewSet(aws.InitParameterStoreClient)
+
 type AwsSet struct {
-	Cognito *aws.CognitoClient
+	Cognito        *aws.CognitoClient
+	ParameterStore *aws.ParameterStoreClient
 }
