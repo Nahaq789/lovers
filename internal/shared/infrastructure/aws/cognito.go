@@ -10,7 +10,7 @@ import (
 
 type CognitoClient struct {
 	logger *slog.Logger
-	client cognitoidentityprovider.Client
+	client *cognitoidentityprovider.Client
 }
 
 func InitCognitoClient(ctx context.Context, l *slog.Logger) (*CognitoClient, error) {
@@ -24,6 +24,6 @@ func InitCognitoClient(ctx context.Context, l *slog.Logger) (*CognitoClient, err
 
 	return &CognitoClient{
 		logger: l,
-		client: *client,
+		client: client,
 	}, nil
 }
