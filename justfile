@@ -1,6 +1,9 @@
 @run:
     go run ./...
 
+@di_aws:
+    wire ./cmd/di/aws
+
 @test:
     go test ./... -cover
 
