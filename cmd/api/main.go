@@ -3,9 +3,8 @@ package main
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"lovers/cmd/di/aws"
-	"lovers/internal/shared/infrastructure/logger"
+	"lovers/cmd/initialize"
 	"net"
 	"net/http"
 	"os"
@@ -18,12 +17,7 @@ import (
 )
 
 func main() {
-	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
-	})
-	contextHandler := logger.NewContextHandler(handler)
-	logger := slog.New(contextHandler)
-	slog.SetDefault(logger)
+	logger := initialize.InitLogger()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
