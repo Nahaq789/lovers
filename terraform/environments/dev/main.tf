@@ -86,3 +86,17 @@ module "cognito" {
     }
   ]
 }
+
+module "ssm" {
+  source = "../../modules/ssm"
+
+  environment  = "dev"
+  project_name = var.project_name
+  common_tags  = local.common_tags
+
+  db_user     = var.db_user
+  db_password = var.db_password
+  db_port     = var.db_port
+  db_host     = var.db_host
+  db_name     = var.db_name
+}
