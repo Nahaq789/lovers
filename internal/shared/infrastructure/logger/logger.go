@@ -19,7 +19,7 @@ func (h *ContextHandler) Handle(ctx context.Context, record slog.Record) error {
 
 	trace := key.NewContextTrace()
 	if id := trace.GetValueFromCtx(ctx); id != "" {
-		attrs = append(attrs, slog.String(trace.GetKey(), id))
+		attrs = append(attrs, slog.String(string(trace.GetKey()), id))
 	}
 
 	if len(attrs) > 0 {

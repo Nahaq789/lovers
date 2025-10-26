@@ -9,7 +9,7 @@ import (
 type ContextKey string
 
 const (
-	contextTraceKey ContextKey = "traceID"
+	ContextTraceKey ContextKey = "traceID"
 )
 
 type ContextTrace struct {
@@ -17,11 +17,11 @@ type ContextTrace struct {
 }
 
 func NewContextTrace() ContextTrace {
-	return ContextTrace{key: contextTraceKey}
+	return ContextTrace{key: ContextTraceKey}
 }
 
-func (c ContextTrace) GetKey() string {
-	return string(c.key)
+func (c ContextTrace) GetKey() ContextKey {
+	return c.key
 }
 
 func (c ContextTrace) GetValueFromCtx(ctx context.Context) string {
@@ -31,7 +31,7 @@ func (c ContextTrace) GetValueFromCtx(ctx context.Context) string {
 	return ""
 }
 
-func (c ContextKey) GenerateID() string {
+func (c ContextTrace) GenerateID() string {
 	id := uuid.New().String()
 	return id
 }
