@@ -42,3 +42,7 @@ func InitDbClient(ctx context.Context, l *slog.Logger, connStr string) (*DbClien
 func (d *DbClient) Close(ctx context.Context) error {
 	return d.client.Close()
 }
+
+func (d *DbClient) GetClient() *sql.DB {
+	return d.client
+}
