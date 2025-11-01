@@ -14,3 +14,7 @@ func NewUserName(v string) (*UserName, error) {
 		value: v,
 	}, nil
 }
+
+func (u UserName) GetValue() string {
+	return u.value
+}
