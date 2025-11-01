@@ -27,3 +27,7 @@ func InitCognitoClient(ctx context.Context, l *slog.Logger) (*CognitoClient, err
 		client: client,
 	}, nil
 }
+
+func (c *CognitoClient) GetClient() *cognitoidentityprovider.Client {
+	return c.client
+}

@@ -16,3 +16,11 @@ func NewAuthAggregate(email email.Email, password password.Password) *AuthAggreg
 		password: password,
 	}
 }
+
+func (a *AuthAggregate) GetEmail() email.Email {
+	return a.email
+}
+
+func (a *AuthAggregate) GetPassword() password.Password {
+	return a.password
+}

@@ -52,7 +52,7 @@ resource "aws_cognito_user_pool_client" "main" {
   user_pool_id = aws_cognito_user_pool.main.id
 
   # クライアント設定
-  generate_secret = false
+  generate_secret = true
   
   # 認証フロー
   explicit_auth_flows = [

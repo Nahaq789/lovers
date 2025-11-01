@@ -16,6 +16,10 @@ func NewPassword(v string) (*Password, error) {
 	return &Password{value: v}, nil
 }
 
+func (p Password) GetValue() string {
+	return p.value
+}
+
 func validatePassword(v string) error {
 	if len(v) < 6 {
 		return errors.New("パスワードは最低6文字必要です")
