@@ -1,4 +1,4 @@
-package aggregates
+package user
 
 import (
 	"lovers/internal/domain/models/user/email"

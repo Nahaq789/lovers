@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 	"log/slog"
-	"lovers/internal/domain/models/aggregates"
+	"lovers/internal/domain/models/aggregates/user"
 	"lovers/internal/domain/models/entity"
 	userid "lovers/internal/domain/models/user/user_id"
 	"lovers/internal/shared/infrastructure/db"
@@ -18,7 +18,7 @@ func NewUserRepository(l *slog.Logger, d *db.DbClient) *UserRepositoryImpl {
 	return &UserRepositoryImpl{logger: l, db: d}
 }
 
-func (u UserRepositoryImpl) Register(ctx context.Context, user aggregates.UserAggregate) error {
+func (u UserRepositoryImpl) Register(ctx context.Context, user user.UserAggregate) error {
 	query := `INSERT INTO users (id, name, email) VALUES (?, ?, ?)`
 	c := u.db.GetClient()
 	_, err := c.ExecContext(ctx, query,
