@@ -80,18 +80,6 @@ variable "token_validity" {
   }
 }
 
-variable "callback_urls" {
-  description = "List of allowed callback URLs"
-  type        = list(string)
-  default     = ["http://localhost:3000/callback"]
-}
-
-variable "logout_urls" {
-  description = "List of allowed logout URLs"
-  type        = list(string)
-  default     = ["http://localhost:3000/logout"]
-}
-
 variable "allow_unauthenticated_identities" {
   description = "Whether the identity pool supports unauthenticated logins"
   type        = bool

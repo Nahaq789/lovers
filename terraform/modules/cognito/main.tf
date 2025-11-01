@@ -10,20 +10,10 @@ resource "aws_cognito_user_pool" "main" {
     require_uppercase = var.password_policy.require_uppercase
   }
 
-  # MFA設定
-  mfa_configuration = var.mfa_configuration
-
   # ユーザー属性
   schema {
     attribute_data_type = "String"
     name                = "email"
-    required            = true
-    mutable             = true
-  }
-
-  schema {
-    attribute_data_type = "String"
-    name                = "name"
     required            = true
     mutable             = true
   }
@@ -81,21 +71,6 @@ resource "aws_cognito_user_pool_client" "main" {
     id_token     = "hours"
     refresh_token = "days"
   }
-
-  # OAuth設定
-  supported_identity_providers = ["COGNITO"]
-  
-  callback_urls = var.callback_urls
-  logout_urls   = var.logout_urls
-
-  # OAuth スコープ
-  allowed_oauth_flows = ["code"]
-  allowed_oauth_scopes = [
-    "email",
-    "openid",
-    "profile"
-  ]
-  allowed_oauth_flows_user_pool_client = true
 }
 
 # Identity Pool
