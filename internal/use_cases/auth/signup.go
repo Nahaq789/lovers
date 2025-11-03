@@ -37,7 +37,8 @@ func (s *SignUp) Execute(ctx context.Context, c *authDto.SignUpDto) error {
 	}
 
 	a := authAggregate.NewAuthAggregate(*email, *password)
-	err = s.authRepository.SignUp(ctx, a)
+	result, err := s.authRepository.SignUp(ctx, a)
+	s.logger.InfoContext(ctx, "result: %s", *result)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "SignUp処理でエラーが発生しました。", "error", err)
 		return err

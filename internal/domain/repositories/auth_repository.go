@@ -6,5 +6,5 @@ import (
 )
 
 type AuthRepository interface {
-	SignUp(ctx context.Context, auth *authAggregate.AuthAggregate) error
+	SignUp(ctx context.Context, auth *authAggregate.AuthAggregate) (*string, error)
 }

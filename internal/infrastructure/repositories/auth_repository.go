@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"lovers/internal/domain/models/aggregates/authAggregate"
+	"lovers/internal/shared/config"
 	sharedAws "lovers/internal/shared/infrastructure/aws"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -17,17 +18,16 @@ import (
 )
 
 type AuthRepositoryImpl struct {
-	logger                 *slog.Logger
-	client                 *sharedAws.CognitoClient
-	clientId, clientSecret string
+	logger        *slog.Logger
+	client        *sharedAws.CognitoClient
+	cognitoConfig *config.CognitoConfig
 }
 
-func NewAuthRepositoryImpl(l *slog.Logger, c *sharedAws.CognitoClient, clientId, clientSecret string) *AuthRepositoryImpl {
+func NewAuthRepositoryImpl(l *slog.Logger, c *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthRepositoryImpl {
 	return &AuthRepositoryImpl{
-		logger:       l,
-		client:       c,
-		clientId:     clientId,
-		clientSecret: clientSecret,
+		logger:        l,
+		client:        c,
+		cognitoConfig: cfg,
 	}
 }
 
@@ -35,7 +35,7 @@ func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth *authAggregate.Aut
 	secretHash := a.generateSecretHash(auth.GetEmail().GetValue())
 	c := a.client.GetClient()
 	output, err := c.SignUp(ctx, &cognitoidentityprovider.SignUpInput{
-		ClientId:   aws.String(a.clientId),
+		ClientId:   aws.String(a.cognitoConfig.ClientId),
 		Password:   aws.String(auth.GetPassword().GetValue()),
 		Username:   aws.String(auth.GetEmail().GetValue()),
 		SecretHash: aws.String(secretHash),
@@ -51,7 +51,7 @@ func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth *authAggregate.Aut
 }
 
 func (a *AuthRepositoryImpl) generateSecretHash(email string) string {
-	mac := hmac.New(sha256.New, []byte(a.clientSecret))
-	mac.Write([]byte(email + a.clientId))
+	mac := hmac.New(sha256.New, []byte(a.cognitoConfig.ClientSecret))
+	mac.Write([]byte(email + a.cognitoConfig.ClientId))
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }
