@@ -31,7 +31,7 @@ func NewAuthRepositoryImpl(l *slog.Logger, c *sharedAws.CognitoClient, clientId,
 	}
 }
 
-func (a *AuthRepositoryImpl) Signup(ctx context.Context, auth auth.AuthAggregate) (*string, error) {
+func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth auth.AuthAggregate) (*string, error) {
 	secretHash := a.generateSecretHash(auth.GetEmail().GetValue())
 	c := a.client.GetClient()
 	output, err := c.SignUp(ctx, &cognitoidentityprovider.SignUpInput{

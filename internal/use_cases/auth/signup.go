@@ -2,6 +2,6 @@ package auth
 
 import "log/slog"
 
-type Signup struct {
+type SignUp struct {
 	logger *slog.Logger
 }
