@@ -10,17 +10,17 @@ import (
 	"context"
 	"github.com/google/wire"
 	"log/slog"
-	"lovers/internal/shared/infrastructure/aws"
+	"lovers/internal/shared/infrastructure/sharedAws"
 )
 
 // Injectors from wire.go:
 
 func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {
-	cognitoClient, err := aws.InitCognitoClient(ctx, logger)
+	cognitoClient, err := sharedAws.InitCognitoClient(ctx, logger)
 	if err != nil {
 		return nil, err
 	}
-	parameterStoreClient, err := aws.InitParameterStoreClient(ctx, logger)
+	parameterStoreClient, err := sharedAws.InitParameterStoreClient(ctx, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -33,11 +33,11 @@ func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {
 
 // wire.go:
 
-var cognitoSet = wire.NewSet(aws.InitCognitoClient)
+var cognitoSet = wire.NewSet(sharedAws.InitCognitoClient)
 
-var parameterStoreSet = wire.NewSet(aws.InitParameterStoreClient)
+var parameterStoreSet = wire.NewSet(sharedAws.InitParameterStoreClient)
 
 type AwsSet struct {
-	Cognito        *aws.CognitoClient
-	ParameterStore *aws.ParameterStoreClient
+	Cognito        *sharedAws.CognitoClient
+	ParameterStore *sharedAws.ParameterStoreClient
 }

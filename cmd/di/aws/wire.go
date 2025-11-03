@@ -6,17 +6,17 @@ package aws
 import (
 	"context"
 	"log/slog"
-	"lovers/internal/shared/infrastructure/aws"
+	"lovers/internal/shared/infrastructure/sharedAws"
 
 	"github.com/google/wire"
 )
 
-var cognitoSet = wire.NewSet(aws.InitCognitoClient)
-var parameterStoreSet = wire.NewSet(aws.InitParameterStoreClient)
+var cognitoSet = wire.NewSet(sharedAws.InitCognitoClient)
+var parameterStoreSet = wire.NewSet(sharedAws.InitParameterStoreClient)
 
 type AwsSet struct {
-	Cognito        *aws.CognitoClient
-	ParameterStore *aws.ParameterStoreClient
+	Cognito        *sharedAws.CognitoClient
+	ParameterStore *sharedAws.ParameterStoreClient
 }
 
 func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {

@@ -13,13 +13,13 @@ import (
 	"lovers/internal/infrastructure/repositories"
 	"lovers/internal/presentations/auth"
 	"lovers/internal/shared/config"
-	"lovers/internal/shared/infrastructure/aws"
+	"lovers/internal/shared/infrastructure/sharedAws"
 	"lovers/internal/use_cases/auth"
 )
 
 // Injectors from wire.go:
 
-func Initialize(logger *slog.Logger, client *aws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
+func Initialize(logger *slog.Logger, client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
 	authRepositoryImpl := ProvideAuthRepository(logger, client, cfg)
 	signUp := auth.NewSignUp(logger, authRepositoryImpl)
 	authControllerAuthController := authController.NewAuthController(logger, signUp)
@@ -31,7 +31,7 @@ func Initialize(logger *slog.Logger, client *aws.CognitoClient, cfg *config.Cogn
 
 // wire.go:
 
-func ProvideAuthRepository(logger *slog.Logger, client *aws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
+func ProvideAuthRepository(logger *slog.Logger, client *sharedAws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
 	repository := repositories.NewAuthRepositoryImpl(logger, client, cognitoConfig)
 	return repository
 }
