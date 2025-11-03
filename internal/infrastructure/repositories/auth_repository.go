@@ -10,7 +10,7 @@ import (
 	"log/slog"
 	"lovers/internal/domain/models/aggregates/authAggregate"
 	"lovers/internal/shared/config"
-	sharedAws "lovers/internal/shared/infrastructure/aws"
+	sharedAws "lovers/internal/shared/infrastructure/sharedAws"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
