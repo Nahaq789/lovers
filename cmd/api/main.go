@@ -28,8 +28,14 @@ func main() {
 		return
 	}
 
+	authSet, err := initialize.InitAuth(ctx, logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to init auth", "error", err)
+		return
+	}
+
 	r := gin.Default()
-	Router(r)
+	Router(r, *authSet)
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: r.Handler(),
