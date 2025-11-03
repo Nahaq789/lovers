@@ -4,6 +4,9 @@
 @di_aws:
     wire ./cmd/di/aws
 
+@di_auth:
+    wire ./cmd/di/auth
+
 @test:
     go test ./... -cover
 
