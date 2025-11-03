@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"lovers/internal/domain/models/aggregates/auth"
+	"lovers/internal/domain/models/aggregates/authAggregate"
 	sharedAws "lovers/internal/shared/infrastructure/aws"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -31,7 +31,7 @@ func NewAuthRepositoryImpl(l *slog.Logger, c *sharedAws.CognitoClient, clientId,
 	}
 }
 
-func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth auth.AuthAggregate) (*string, error) {
+func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth *authAggregate.AuthAggregate) (*string, error) {
 	secretHash := a.generateSecretHash(auth.GetEmail().GetValue())
 	c := a.client.GetClient()
 	output, err := c.SignUp(ctx, &cognitoidentityprovider.SignUpInput{

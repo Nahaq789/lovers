@@ -1,4 +1,4 @@
-package auth
+package authAggregate
 
 import (
 	"lovers/internal/domain/models/value_objects/email"

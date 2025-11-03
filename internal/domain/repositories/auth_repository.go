@@ -2,9 +2,9 @@ package repositories
 
 import (
 	"context"
-	"lovers/internal/domain/models/aggregates/auth"
+	"lovers/internal/domain/models/aggregates/authAggregate"
 )
 
 type AuthRepository interface {
-	SignUp(ctx context.Context, auth auth.AuthAggregate) error
+	SignUp(ctx context.Context, auth *authAggregate.AuthAggregate) error
 }
