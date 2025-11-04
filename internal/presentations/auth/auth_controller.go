@@ -21,7 +21,7 @@ func NewAuthController(l *slog.Logger, s *auth.SignUp) *AuthController {
 	}
 }
 
-func (a *AuthController) SignUp(ctx *gin.Context, c *authDto.SignUpDto) {
+func (a *AuthController) SignUp(ctx *gin.Context) {
 	var auth authDto.SignUpDto
 	if err := ctx.ShouldBind(&auth); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
