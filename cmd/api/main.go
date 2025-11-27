@@ -10,10 +10,17 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	logger := initialize.InitLogger()
+
+	envErr := godotenv.Load()
+	if envErr != nil {
+		logger.Error("Error loading env")
+		return
+	}
 
 	ctx := context.Background()
 
