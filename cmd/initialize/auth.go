@@ -8,12 +8,7 @@ import (
 	"lovers/internal/shared/infrastructure/sharedAws"
 )
 
-func InitAuth(ctx context.Context, l *slog.Logger) (*authDi.AuthSet, error) {
-	cognitoClient, err := sharedAws.InitCognitoClient(ctx, l)
-	if err != nil {
-		return nil, err
-	}
-
+func InitAuth(ctx context.Context, l *slog.Logger, cognitoClient *sharedAws.CognitoClient) (*authDi.AuthSet, error) {
 	cognitoConfig := config.LoadCognitoConfig()
 
 	authSet := authDi.Initialize(l, cognitoClient, cognitoConfig)

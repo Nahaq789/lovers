@@ -17,13 +17,13 @@ func main() {
 
 	ctx := context.Background()
 
-	_, err := aws.Initialize(ctx, logger)
+	aws, err := aws.Initialize(ctx, logger)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to init aws client", "error", err)
 		return
 	}
 
-	authSet, err := initialize.InitAuth(ctx, logger)
+	authSet, err := initialize.InitAuth(ctx, logger, aws.Cognito)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to init auth", "error", err)
 		return
