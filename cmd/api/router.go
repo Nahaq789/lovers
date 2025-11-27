@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	authDi "lovers/cmd/di/auth"
 	"lovers/internal/presentation/middleware"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +17,10 @@ func Router(r gin.IRouter, authSet authDi.AuthSet) {
 		v1.POST("/auth/signup", authSet.AuthController.SignUp)
 	}
 
-	v1.GET("/ping", func(c *gin.Context) {
+	r.GET("/ping", func(c *gin.Context) {
 		slog.InfoContext(c.Request.Context(), "良い子のみんな〜")
+		time.Sleep(10 * time.Second)
+		slog.InfoContext(c.Request.Context(), "hogehoge")
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})

@@ -2,14 +2,10 @@ package main
 
 import (
 	"context"
-	"errors"
 	"lovers/cmd/di/aws"
 	"lovers/cmd/initialize"
-	"net"
 	"net/http"
-	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 
@@ -19,8 +15,7 @@ import (
 func main() {
 	logger := initialize.InitLogger()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := context.Background()
 
 	_, err := aws.Initialize(ctx, logger)
 	if err != nil {
@@ -39,29 +34,27 @@ func main() {
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: r.Handler(),
-		BaseContext: func(net.Listener) context.Context {
-			return ctx
-		}}
+	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-	defer wg.Wait()
+	serverCtx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
+	c := make(chan error, 1)
 	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		<-c
-
-		shutdownCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-
-		if err := server.Shutdown(shutdownCtx); err != nil {
-			logger.InfoContext(shutdownCtx, "HTTP Server Shutdown", "error", err)
-		}
-		wg.Done()
+		c <- server.ListenAndServe()
 	}()
 
-	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logger.ErrorContext(ctx, "HTTP server ListenAndServe", "error", err)
+	select {
+	case err := <-c:
+		if err != nil && err != http.ErrServerClosed {
+			logger.ErrorContext(ctx, "HTTP server ListenAndServe", "error", err)
+		}
+	case <-serverCtx.Done():
+		logger.Info("Server stopping")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			logger.ErrorContext(shutdownCtx, "HTTP Server Shutdown", "error", err)
+		}
 	}
 }
