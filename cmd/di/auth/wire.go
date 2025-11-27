@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	domainRepos "lovers/internal/domain/repositories"
 	"lovers/internal/infrastructure/repositories"
-	authController "lovers/internal/presentations/auth"
+	authController "lovers/internal/presentation/auth"
 	"lovers/internal/shared/config"
 	"lovers/internal/shared/infrastructure/sharedAws"
 	use_case "lovers/internal/use_cases/auth"

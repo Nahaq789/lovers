@@ -3,7 +3,7 @@ package main
 import (
 	"log/slog"
 	authDi "lovers/cmd/di/auth"
-	"lovers/internal/presentations/middleware"
+	"lovers/internal/presentation/middleware"
 
 	"github.com/gin-gonic/gin"
 )

@@ -11,7 +11,7 @@ import (
 	"log/slog"
 	repositories2 "lovers/internal/domain/repositories"
 	"lovers/internal/infrastructure/repositories"
-	"lovers/internal/presentations/auth"
+	"lovers/internal/presentation/auth"
 	"lovers/internal/shared/config"
 	"lovers/internal/shared/infrastructure/sharedAws"
 	"lovers/internal/use_cases/auth"
