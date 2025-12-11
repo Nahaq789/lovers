@@ -20,7 +20,7 @@ func validateEmail(v string) error {
 	emailRegex := `^[a-zA-Z0-9!#$%&'*+/=?^_` + "`" + `{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_` + "`" + `{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+$`
 	re := regexp.MustCompile(emailRegex)
 
-	if !re.MatchString(v) {
+	if len(v) <= 254 && !re.MatchString(v) {
 		return errors.New("メールアドレスの形式が正しくないです。")
 	}
 	return nil
