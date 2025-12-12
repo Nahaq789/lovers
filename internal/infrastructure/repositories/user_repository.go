@@ -19,10 +19,10 @@ func NewUserRepository(l *slog.Logger, d *db.DbClient) *UserRepositoryImpl {
 }
 
 func (u UserRepositoryImpl) Register(ctx context.Context, user user.UserAggregate) error {
-	query := `INSERT INTO users (id, name, email) VALUES (?, ?, ?)`
+	query := `INSERT INTO users (id, name, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`
 	c := u.db.GetClient()
 	_, err := c.ExecContext(ctx, query,
-		user.GetUserId().GetValue(), user.GetUserName().GetValue(), user.GetEmail())
+		user.GetUserId().GetValue(), user.GetUserName().GetValue(), user.GetEmail().GetValue(), user.GetCreatedAt().GetValue(), user.GetUpdatedAt().GetValue())
 
 	if err != nil {
 		u.logger.ErrorContext(ctx, "failed to register user", "error", err)
