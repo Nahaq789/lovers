@@ -1,11 +1,15 @@
 package user
 
 type UserRegistrationDto struct {
-	UserId string
+	UserId   string
+	Email    string
+	UserName string
 }
 
-func NewUserRegistrationDto(userId string) *UserRegistrationDto {
+func NewUserRegistrationDto(userId, email, userName string) *UserRegistrationDto {
 	return &UserRegistrationDto{
-		UserId: userId,
+		UserId:   userId,
+		Email:    email,
+		UserName: userName,
 	}
 }
