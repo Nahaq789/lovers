@@ -15,3 +15,9 @@
     terraform init && \
     terraform plan -var-file="terraform.tfvars" && \
     terraform apply -var-file="terraform.tfvars"
+
+@run_db:
+    docker compose up -d
+
+@stop_db:
+    docker compose stop
