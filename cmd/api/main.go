@@ -14,29 +14,31 @@ import (
 )
 
 func main() {
-	logger := initialize.InitLogger()
+	l := initialize.InitLogger()
 
 	envErr := godotenv.Load()
 	if envErr != nil {
-		logger.Error("Error loading env")
+		l.Error("Error loading env")
 		return
 	}
 
 	ctx := context.Background()
+	ctxWithLogger := initialize.WithContext(ctx, l)
 
-	aws, err := aws.Initialize(ctx, logger)
+	aws, err := aws.Initialize(ctxWithLogger)
 	if err != nil {
-		logger.ErrorContext(ctx, "failed to init aws client", "error", err)
+		l.ErrorContext(ctxWithLogger, "failed to init aws client", "error", err)
 		return
 	}
 
-	authSet, err := initialize.InitAuth(ctx, logger, aws.Cognito)
+	authSet, err := initialize.InitAuth(ctxWithLogger, aws.Cognito)
 	if err != nil {
-		logger.ErrorContext(ctx, "failed to init auth", "error", err)
+		l.ErrorContext(ctxWithLogger, "failed to init auth", "error", err)
 		return
 	}
 
 	r := gin.Default()
+	r.ContextWithFallback = true
 	Router(r, *authSet)
 	server := &http.Server{
 		Addr:    ":8080",
@@ -54,14 +56,14 @@ func main() {
 	select {
 	case err := <-c:
 		if err != nil && err != http.ErrServerClosed {
-			logger.ErrorContext(ctx, "HTTP server ListenAndServe", "error", err)
+			l.ErrorContext(ctx, "HTTP server ListenAndServe", "error", err)
 		}
 	case <-serverCtx.Done():
-		logger.Info("Server stopping")
+		l.Info("Server stopping")
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
-			logger.ErrorContext(shutdownCtx, "HTTP Server Shutdown", "error", err)
+			l.ErrorContext(shutdownCtx, "HTTP Server Shutdown", "error", err)
 		}
 	}
 }

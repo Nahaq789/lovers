@@ -8,7 +8,6 @@ package authDi
 
 import (
 	"github.com/google/wire"
-	"log/slog"
 	repositories2 "lovers/internal/domain/repositories"
 	"lovers/internal/infrastructure/repositories"
 	"lovers/internal/presentation/auth"
@@ -19,10 +18,10 @@ import (
 
 // Injectors from wire.go:
 
-func Initialize(logger *slog.Logger, client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
-	authRepositoryImpl := ProvideAuthRepository(logger, client, cfg)
-	signUp := auth.NewSignUp(logger, authRepositoryImpl)
-	authControllerAuthController := authController.NewAuthController(logger, signUp)
+func Initialize(client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
+	authRepositoryImpl := ProvideAuthRepository(client, cfg)
+	signUp := auth.NewSignUp(authRepositoryImpl)
+	authControllerAuthController := authController.NewAuthController(signUp)
 	authSet := &AuthSet{
 		AuthController: authControllerAuthController,
 	}
@@ -31,8 +30,8 @@ func Initialize(logger *slog.Logger, client *sharedAws.CognitoClient, cfg *confi
 
 // wire.go:
 
-func ProvideAuthRepository(logger *slog.Logger, client *sharedAws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
-	repository := repositories.NewAuthRepositoryImpl(logger, client, cognitoConfig)
+func ProvideAuthRepository(client *sharedAws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
+	repository := repositories.NewAuthRepositoryImpl(client, cognitoConfig)
 	return repository
 }
 

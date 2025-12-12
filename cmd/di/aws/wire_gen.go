@@ -9,18 +9,17 @@ package aws
 import (
 	"context"
 	"github.com/google/wire"
-	"log/slog"
 	"lovers/internal/shared/infrastructure/sharedAws"
 )
 
 // Injectors from wire.go:
 
-func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {
-	cognitoClient, err := sharedAws.InitCognitoClient(ctx, logger)
+func Initialize(ctx context.Context) (*AwsSet, error) {
+	cognitoClient, err := sharedAws.InitCognitoClient(ctx)
 	if err != nil {
 		return nil, err
 	}
-	parameterStoreClient, err := sharedAws.InitParameterStoreClient(ctx, logger)
+	parameterStoreClient, err := sharedAws.InitParameterStoreClient(ctx)
 	if err != nil {
 		return nil, err
 	}

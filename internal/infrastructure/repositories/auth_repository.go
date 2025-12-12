@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"log/slog"
 	"lovers/internal/domain/models/aggregates/authAggregate"
 	"lovers/internal/shared/config"
 	sharedAws "lovers/internal/shared/infrastructure/sharedAws"
@@ -18,14 +17,12 @@ import (
 )
 
 type AuthRepositoryImpl struct {
-	logger        *slog.Logger
 	client        *sharedAws.CognitoClient
 	cognitoConfig *config.CognitoConfig
 }
 
-func NewAuthRepositoryImpl(l *slog.Logger, c *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthRepositoryImpl {
+func NewAuthRepositoryImpl(c *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthRepositoryImpl {
 	return &AuthRepositoryImpl{
-		logger:        l,
 		client:        c,
 		cognitoConfig: cfg,
 	}

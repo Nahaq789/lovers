@@ -1,7 +1,6 @@
 package authController
 
 import (
-	"log/slog"
 	"lovers/internal/use_cases/auth"
 	"lovers/internal/use_cases/dto/authDto"
 	"net/http"
@@ -10,13 +9,11 @@ import (
 )
 
 type AuthController struct {
-	logger *slog.Logger
 	signUp *auth.SignUp
 }
 
-func NewAuthController(l *slog.Logger, s *auth.SignUp) *AuthController {
+func NewAuthController(s *auth.SignUp) *AuthController {
 	return &AuthController{
-		logger: l,
 		signUp: s,
 	}
 }

@@ -2,7 +2,7 @@ package sharedAws
 
 import (
 	"context"
-	"log/slog"
+	"lovers/internal/shared/infrastructure/logger"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -10,11 +10,11 @@ import (
 )
 
 type ParameterStoreClient struct {
-	logger *slog.Logger
 	client *ssm.Client
 }
 
-func InitParameterStoreClient(ctx context.Context, l *slog.Logger) (*ParameterStoreClient, error) {
+func InitParameterStoreClient(ctx context.Context) (*ParameterStoreClient, error) {
+	l := logger.FromContext(ctx)
 	sdkConfig, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		l.ErrorContext(ctx, "failed init ssm client", "error", err)
@@ -23,7 +23,6 @@ func InitParameterStoreClient(ctx context.Context, l *slog.Logger) (*ParameterSt
 
 	client := ssm.NewFromConfig(sdkConfig)
 	return &ParameterStoreClient{
-		logger: l,
 		client: client,
 	}, nil
 }
@@ -34,7 +33,8 @@ func (p *ParameterStoreClient) GetParameter(ctx context.Context, name string) (s
 		WithDecryption: aws.Bool(true),
 	})
 	if err != nil {
-		p.logger.ErrorContext(ctx, "failed to get parameter", "name", name, "error", err)
+		l := logger.FromContext(ctx)
+		l.ErrorContext(ctx, "failed to get parameter", "name", name, "error", err)
 		return "", err
 	}
 	return *result.Parameter.Value, nil

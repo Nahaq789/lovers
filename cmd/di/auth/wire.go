@@ -4,7 +4,6 @@
 package authDi
 
 import (
-	"log/slog"
 	domainRepos "lovers/internal/domain/repositories"
 	"lovers/internal/infrastructure/repositories"
 	authController "lovers/internal/presentation/auth"
@@ -15,8 +14,8 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvideAuthRepository(logger *slog.Logger, client *sharedAws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
-	repository := repositories.NewAuthRepositoryImpl(logger, client, cognitoConfig)
+func ProvideAuthRepository(client *sharedAws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
+	repository := repositories.NewAuthRepositoryImpl(client, cognitoConfig)
 	return repository
 }
 
@@ -32,7 +31,7 @@ type AuthSet struct {
 	AuthController *authController.AuthController
 }
 
-func Initialize(logger *slog.Logger, client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
+func Initialize(client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
 	wire.Build(
 		authRepositorySet,
 		signUpSet,
