@@ -23,13 +23,13 @@ func newUserIdWithGenerator(generator UUIDGenerator) (UserId, error) {
 	return UserId{value: u}, nil
 }
 
-func NewUserIdFromString(s string) (UserId, error) {
+func NewUserIdFromString(s string) (*UserId, error) {
 	v, err := uuid.Parse(s)
 	if err != nil {
-		return UserId{}, err
+		return nil, err
 	}
 
-	return UserId{value: v}, nil
+	return &UserId{value: v}, nil
 }
 
 func (u UserId) GetValue() string {

@@ -39,13 +39,13 @@ func (u UserRepositoryImpl) GetUser(ctx context.Context, userId userid.UserId) (
 	return nil, nil
 }
 
-func (u UserRepositoryImpl) ExistsUserId(ctx context.Context, userId userid.UserId) (bool, error) {
+func (u UserRepositoryImpl) Exists(ctx context.Context, userId *userid.UserId, email *email.Email) (bool, error) {
 	l := logger.FromContext(ctx)
-	query := `select user_id from user where user_id = $1`
+	query := `select user_id from user where user_id = $1 or email = $2`
 	c := u.db.GetClient()
 
 	var id string
-	err := c.QueryRowContext(ctx, query, userId.GetValue()).Scan(&id)
+	err := c.QueryRowContext(ctx, query, userId.GetValue(), email.GetValue()).Scan(&id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// ユーザーが存在しない場合
@@ -58,27 +58,5 @@ func (u UserRepositoryImpl) ExistsUserId(ctx context.Context, userId userid.User
 
 	// ユーザーが存在する場合
 	l.WarnContext(ctx, "user already exists", "user_id", id)
-	return true, nil
-}
-
-func (u UserRepositoryImpl) ExistsEmail(ctx context.Context, email email.Email) (bool, error) {
-	l := logger.FromContext(ctx)
-	query := `select email from user where email = $1`
-	c := u.db.GetClient()
-
-	var e string
-	err := c.QueryRowContext(ctx, query, email.GetValue()).Scan(&e)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			// ユーザーが存在しない場合
-			return false, nil
-		}
-		// DBエラー
-		l.ErrorContext(ctx, "failed to check user existence", "error", err, "email", email.GetValue())
-		return false, err
-	}
-
-	// ユーザーが存在する場合
-	l.WarnContext(ctx, "user already exists", "email", e)
 	return true, nil
 }

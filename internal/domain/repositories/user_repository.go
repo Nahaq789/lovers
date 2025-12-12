@@ -11,6 +11,5 @@ import (
 type UserRepository interface {
 	Register(ctx context.Context, user user.UserAggregate) error
 	GetUser(ctx context.Context, userId userid.UserId) (*entity.UserEntity, error)
-	ExistsUserId(ctx context.Context, userId userid.UserId) (bool, error)
-	ExistsEmail(ctx context.Context, email email.Email) (bool, error)
+	Exists(ctx context.Context, userId *userid.UserId, email *email.Email) (bool, error)
 }
