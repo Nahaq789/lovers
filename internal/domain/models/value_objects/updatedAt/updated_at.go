@@ -6,9 +6,9 @@ type UpdatedAt struct {
 	value time.Time
 }
 
-func NewUpdatedAt() *UpdatedAt {
+func NewUpdatedAt() UpdatedAt {
 	now := time.Now().UTC()
-	return &UpdatedAt{value: now}
+	return UpdatedAt{value: now}
 }
 
 func (u UpdatedAt) GetValue() time.Time {

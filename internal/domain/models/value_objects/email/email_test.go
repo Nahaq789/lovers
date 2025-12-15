@@ -82,7 +82,7 @@ func TestNewEmail(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			email, err := NewEmail(tt.input)
+			_, err := NewEmail(tt.input)
 
 			if tt.wantError {
 				if err == nil {
@@ -92,16 +92,9 @@ func TestNewEmail(t *testing.T) {
 				if err.Error() != tt.errorMsg {
 					t.Errorf("NewEmail(%q) error message = %q, want %q", tt.input, err.Error(), tt.errorMsg)
 				}
-				if email != nil {
-					t.Errorf("NewEmail(%q) expected email to be nil when error occurs, but got %v", tt.input, email)
-				}
 			} else {
 				if err != nil {
 					t.Errorf("NewEmail(%q) unexpected error: %v", tt.input, err)
-					return
-				}
-				if email == nil {
-					t.Errorf("NewEmail(%q) expected email to be non-nil, but got nil", tt.input)
 					return
 				}
 			}

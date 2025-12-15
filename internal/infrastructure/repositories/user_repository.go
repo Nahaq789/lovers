@@ -22,7 +22,7 @@ func NewUserRepository(d *db.DbClient) *UserRepositoryImpl {
 
 func (u UserRepositoryImpl) Register(ctx context.Context, user user.UserAggregate) error {
 	l := logger.FromContext(ctx)
-	query := `INSERT INTO users (user_id, name, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`
+	query := `INSERT INTO "user" (user_id, user_name, email, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)`
 	c := u.db.GetClient()
 	_, err := c.ExecContext(ctx, query,
 		user.GetUserId().GetValue(), user.GetUserName().GetValue(), user.GetEmail().GetValue(), user.GetCreatedAt().GetValue(), user.GetUpdatedAt().GetValue())
@@ -41,7 +41,7 @@ func (u UserRepositoryImpl) GetUser(ctx context.Context, userId userid.UserId) (
 
 func (u UserRepositoryImpl) Exists(ctx context.Context, userId *userid.UserId, email *email.Email) (bool, error) {
 	l := logger.FromContext(ctx)
-	query := `select user_id from user where user_id = $1 or email = $2`
+	query := `select user_id from "user" where user_id = $1 or email = $2`
 	c := u.db.GetClient()
 
 	var id string

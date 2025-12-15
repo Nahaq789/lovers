@@ -9,11 +9,11 @@ type Password struct {
 	value string
 }
 
-func NewPassword(v string) (*Password, error) {
+func NewPassword(v string) (Password, error) {
 	if err := validatePassword(v); err != nil {
-		return nil, err
+		return Password{}, err
 	}
-	return &Password{value: v}, nil
+	return Password{value: v}, nil
 }
 
 func (p Password) GetValue() string {

@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package authDi
+package auth
 
 import (
 	domainRepos "lovers/internal/domain/repositories"

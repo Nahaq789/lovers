@@ -1,3 +1,5 @@
+set dotenv-load := true
+
 @run:
     go run ./...
 
@@ -6,6 +8,9 @@
 
 @di_auth:
     wire ./cmd/di/auth
+
+@di_user:
+    wire ./cmd/di/user
 
 @test:
     go test ./... -cover

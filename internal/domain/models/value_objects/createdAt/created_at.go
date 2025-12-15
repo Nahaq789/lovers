@@ -6,9 +6,9 @@ type CreatedAt struct {
 	value time.Time
 }
 
-func NewCreatedAt() *CreatedAt {
+func NewCreatedAt() CreatedAt {
 	now := time.Now().UTC()
-	return &CreatedAt{value: now}
+	return CreatedAt{value: now}
 }
 
 func (c CreatedAt) GetValue() time.Time {

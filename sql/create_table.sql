@@ -1,7 +1,3 @@
--- Lovers アプリケーション テーブル作成クエリ
--- PostgreSQL / Supabase 用
--- すべての日時はUTC形式（TIMESTAMPTZ）で保存
-
 -- 1. user テーブル
 CREATE TABLE IF NOT EXISTS "user" (
     user_id UUID PRIMARY KEY,

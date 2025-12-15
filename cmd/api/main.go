@@ -37,9 +37,18 @@ func main() {
 		return
 	}
 
+	db, err := initialize.InitDB(ctxWithLogger, l, aws.ParameterStore)
+	if err != nil {
+		l.ErrorContext(ctxWithLogger, "failed to init db", "error", err)
+		return
+	}
+
+	userSet := initialize.InitUser(ctxWithLogger, db)
+
 	r := gin.Default()
 	r.ContextWithFallback = true
-	Router(r, *authSet)
+	AuthRouter(r, *authSet)
+	UserRouter(r, *userSet)
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: r.Handler(),

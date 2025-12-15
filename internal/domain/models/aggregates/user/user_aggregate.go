@@ -5,14 +5,12 @@ import (
 	username "lovers/internal/domain/models/user/user_name"
 	createdat "lovers/internal/domain/models/value_objects/createdAt"
 	"lovers/internal/domain/models/value_objects/email"
-	"lovers/internal/domain/models/value_objects/password"
 	updatedat "lovers/internal/domain/models/value_objects/updatedAt"
 )
 
 type UserAggregate struct {
 	userId    userid.UserId
 	email     email.Email
-	password  password.Password
 	userName  username.UserName
 	createdAt createdat.CreatedAt
 	updatedAt updatedat.UpdatedAt
@@ -21,15 +19,15 @@ type UserAggregate struct {
 func NewUserAggregate(
 	id userid.UserId,
 	email email.Email,
-	password password.Password,
 	userName username.UserName,
 	createdAt createdat.CreatedAt,
 	updatedAt updatedat.UpdatedAt) *UserAggregate {
 	return &UserAggregate{
-		userId:   id,
-		email:    email,
-		password: password,
-		userName: userName,
+		userId:    id,
+		email:     email,
+		userName:  userName,
+		createdAt: createdAt,
+		updatedAt: updatedAt,
 	}
 }
 

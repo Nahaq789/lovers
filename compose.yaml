@@ -8,5 +8,8 @@ services:
     volumes:
       - ./sql/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
     environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - .env

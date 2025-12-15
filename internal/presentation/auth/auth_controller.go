@@ -1,25 +1,25 @@
-package authController
+package auth
 
 import (
-	"lovers/internal/use_cases/auth"
-	"lovers/internal/use_cases/dto/authDto"
+	auth_signup "lovers/internal/use_cases/auth"
+	"lovers/internal/use_cases/dto/auth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {
-	signUp *auth.SignUp
+	signUp *auth_signup.SignUp
 }
 
-func NewAuthController(s *auth.SignUp) *AuthController {
+func NewAuthController(s *auth_signup.SignUp) *AuthController {
 	return &AuthController{
 		signUp: s,
 	}
 }
 
 func (a *AuthController) SignUp(ctx *gin.Context) {
-	var auth authDto.SignUpDto
+	var auth auth.SignUpDto
 	if err := ctx.ShouldBind(&auth); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": http.StatusBadRequest,

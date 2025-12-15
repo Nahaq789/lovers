@@ -75,16 +75,9 @@ func TestNewPassword(t *testing.T) {
 				if err.Error() != tt.errMsg {
 					t.Errorf("NewPassword() error = %v, want %v", err.Error(), tt.errMsg)
 				}
-				if password != nil {
-					t.Errorf("NewPassword() = %v, want nil", password)
-				}
 			} else {
 				if err != nil {
 					t.Errorf("NewPassword() error = %v, wantErr %v", err, tt.wantErr)
-					return
-				}
-				if password == nil {
-					t.Error("NewPassword() = nil, want non-nil")
 					return
 				}
 				if password.value != tt.input {

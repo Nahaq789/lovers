@@ -4,13 +4,13 @@
 //go:build !wireinject
 // +build !wireinject
 
-package authDi
+package auth
 
 import (
 	"github.com/google/wire"
 	repositories2 "lovers/internal/domain/repositories"
 	"lovers/internal/infrastructure/repositories"
-	"lovers/internal/presentation/auth"
+	auth2 "lovers/internal/presentation/auth"
 	"lovers/internal/shared/config"
 	"lovers/internal/shared/infrastructure/sharedAws"
 	"lovers/internal/use_cases/auth"
@@ -21,9 +21,9 @@ import (
 func Initialize(client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
 	authRepositoryImpl := ProvideAuthRepository(client, cfg)
 	signUp := auth.NewSignUp(authRepositoryImpl)
-	authControllerAuthController := authController.NewAuthController(signUp)
+	authController := auth2.NewAuthController(signUp)
 	authSet := &AuthSet{
-		AuthController: authControllerAuthController,
+		AuthController: authController,
 	}
 	return authSet
 }
@@ -41,8 +41,8 @@ var authRepositorySet = wire.NewSet(
 
 var signUpSet = wire.NewSet(auth.NewSignUp)
 
-var authControllerSet = wire.NewSet(authController.NewAuthController)
+var authControllerSet = wire.NewSet(auth2.NewAuthController)
 
 type AuthSet struct {
-	AuthController *authController.AuthController
+	AuthController *auth2.AuthController
 }

@@ -3,13 +3,14 @@ package main
 import (
 	"log/slog"
 	authDi "lovers/cmd/di/auth"
+	"lovers/cmd/di/user"
 	"lovers/internal/presentation/middleware"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Router(r gin.IRouter, authSet authDi.AuthSet) {
+func AuthRouter(r gin.IRouter, authSet authDi.AuthSet) {
 	v1 := r.Group("api/v1")
 	v1.Use(middleware.TraceMiddleware())
 	v1.Use(middleware.LoggingMiddleware())
@@ -25,4 +26,14 @@ func Router(r gin.IRouter, authSet authDi.AuthSet) {
 			"message": "pong",
 		})
 	})
+}
+
+func UserRouter(r gin.IRouter, userSet user.UserSet) {
+	v1 := r.Group("api/v1")
+	v1.Use(middleware.TraceMiddleware())
+	v1.Use(middleware.LoggingMiddleware())
+
+	{
+		v1.POST("/user/register", userSet.UserController.Registration)
+	}
 }

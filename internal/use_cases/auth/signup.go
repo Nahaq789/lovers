@@ -7,7 +7,7 @@ import (
 	"lovers/internal/domain/models/value_objects/password"
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
-	"lovers/internal/use_cases/dto/authDto"
+	"lovers/internal/use_cases/dto/auth"
 )
 
 type SignUp struct {
@@ -20,7 +20,7 @@ func NewSignUp(a repositories.AuthRepository) *SignUp {
 	}
 }
 
-func (s *SignUp) Execute(ctx context.Context, c *authDto.SignUpDto) error {
+func (s *SignUp) Execute(ctx context.Context, c *auth.SignUpDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "SignUp処理を開始します。")
 	email, err := email.NewEmail(c.Email)
@@ -35,7 +35,7 @@ func (s *SignUp) Execute(ctx context.Context, c *authDto.SignUpDto) error {
 		return err
 	}
 
-	a := authAggregate.NewAuthAggregate(*email, *password)
+	a := authAggregate.NewAuthAggregate(email, password)
 	result, err := s.authRepository.SignUp(ctx, a)
 	l.InfoContext(ctx, "result", "value", result)
 	if err != nil {
