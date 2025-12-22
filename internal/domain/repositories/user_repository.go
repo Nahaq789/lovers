@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"context"
+	"lovers/internal/domain/entity"
 	"lovers/internal/domain/models/aggregates/user"
-	"lovers/internal/domain/models/entity"
 	userid "lovers/internal/domain/models/user/user_id"
 	"lovers/internal/domain/models/value_objects/email"
 )
