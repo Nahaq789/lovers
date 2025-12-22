@@ -1,20 +1,19 @@
 package userid
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	valueObjectUuid "lovers/internal/domain/models/value_objects/uuid"
+)
 
 type UserId struct {
 	value uuid.UUID
 }
 
-type UUIDGenerator func() (uuid.UUID, error)
-
-var defaultGenerator UUIDGenerator = uuid.NewV7
-
 func NewUserId() (UserId, error) {
-	return newUserIdWithGenerator(defaultGenerator)
+	return newUserIdWithGenerator(valueObjectUuid.DefaultGenerator)
 }
 
-func newUserIdWithGenerator(generator UUIDGenerator) (UserId, error) {
+func newUserIdWithGenerator(generator valueObjectUuid.UUIDGenerator) (UserId, error) {
 	u, err := generator()
 	if err != nil {
 		return UserId{}, err
