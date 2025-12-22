@@ -7,9 +7,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"lovers/internal/domain/models/aggregates/authAggregate"
+	"lovers/internal/domain/models/aggregates/authaggregate"
 	"lovers/internal/shared/config"
-	sharedAws "lovers/internal/shared/infrastructure/sharedAws"
+	"lovers/internal/shared/infrastructure/sharedaws"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
@@ -17,18 +17,18 @@ import (
 )
 
 type AuthRepositoryImpl struct {
-	client        *sharedAws.CognitoClient
+	client        *sharedaws.CognitoClient
 	cognitoConfig *config.CognitoConfig
 }
 
-func NewAuthRepositoryImpl(c *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthRepositoryImpl {
+func NewAuthRepositoryImpl(c *sharedaws.CognitoClient, cfg *config.CognitoConfig) *AuthRepositoryImpl {
 	return &AuthRepositoryImpl{
 		client:        c,
 		cognitoConfig: cfg,
 	}
 }
 
-func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth *authAggregate.AuthAggregate) (*string, error) {
+func (a *AuthRepositoryImpl) SignUp(ctx context.Context, auth *authaggregate.AuthAggregate) (*string, error) {
 	secretHash := a.generateSecretHash(auth.GetEmail().GetValue())
 	c := a.client.GetClient()
 	output, err := c.SignUp(ctx, &cognitoidentityprovider.SignUpInput{

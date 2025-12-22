@@ -1,4 +1,4 @@
-package sharedAws
+package sharedaws
 
 import (
 	"context"

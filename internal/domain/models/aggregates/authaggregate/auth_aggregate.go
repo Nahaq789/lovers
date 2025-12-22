@@ -1,8 +1,8 @@
-package authAggregate
+package authaggregate
 
 import (
-	"lovers/internal/domain/models/value_objects/email"
-	"lovers/internal/domain/models/value_objects/password"
+	"lovers/internal/domain/models/valueobjects/email"
+	"lovers/internal/domain/models/valueobjects/password"
 )
 
 type AuthAggregate struct {

@@ -8,7 +8,7 @@ import (
 	"lovers/internal/infrastructure/repositories"
 	"lovers/internal/presentation/user"
 	"lovers/internal/shared/infrastructure/db"
-	user_registration "lovers/internal/use_cases/user"
+	user_registration "lovers/internal/usecases/user"
 
 	"github.com/google/wire"
 )

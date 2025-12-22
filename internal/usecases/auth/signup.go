@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
-	"lovers/internal/domain/models/aggregates/authAggregate"
-	"lovers/internal/domain/models/value_objects/email"
-	"lovers/internal/domain/models/value_objects/password"
+	"lovers/internal/domain/models/aggregates/authaggregate"
+	"lovers/internal/domain/models/valueobjects/email"
+	"lovers/internal/domain/models/valueobjects/password"
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
-	"lovers/internal/use_cases/dto/auth"
+	"lovers/internal/usecases/dto/auth"
 )
 
 type SignUp struct {
@@ -35,7 +35,7 @@ func (s *SignUp) Execute(ctx context.Context, c *auth.SignUpDto) error {
 		return err
 	}
 
-	a := authAggregate.NewAuthAggregate(email, password)
+	a := authaggregate.NewAuthAggregate(email, password)
 	result, err := s.authRepository.SignUp(ctx, a)
 	l.InfoContext(ctx, "result", "value", result)
 	if err != nil {

@@ -1,8 +1,8 @@
 package auth
 
 import (
-	auth_signup "lovers/internal/use_cases/auth"
-	"lovers/internal/use_cases/dto/auth"
+	auth_signup "lovers/internal/usecases/auth"
+	"lovers/internal/usecases/dto/auth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

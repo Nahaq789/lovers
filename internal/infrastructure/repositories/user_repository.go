@@ -6,8 +6,8 @@ import (
 	"errors"
 	"lovers/internal/domain/entity"
 	"lovers/internal/domain/models/aggregates/user"
-	userid "lovers/internal/domain/models/user/user_id"
-	"lovers/internal/domain/models/value_objects/email"
+	userid "lovers/internal/domain/models/user/userid"
+	"lovers/internal/domain/models/valueobjects/email"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/shared/infrastructure/logger"
 )

@@ -1,8 +1,8 @@
 package user
 
 import (
-	userDto "lovers/internal/use_cases/dto/user"
-	user_registration "lovers/internal/use_cases/user"
+	userDto "lovers/internal/usecases/dto/user"
+	user_registration "lovers/internal/usecases/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

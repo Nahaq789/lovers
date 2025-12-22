@@ -2,7 +2,7 @@ package template
 
 import (
 	"github.com/google/uuid"
-	valueObjectUuid "lovers/internal/domain/models/value_objects/uuid"
+	valueObjectUuid "lovers/internal/domain/models/valueobjects/uuid"
 )
 
 type TemplateId struct {

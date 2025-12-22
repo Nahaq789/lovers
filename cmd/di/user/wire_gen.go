@@ -12,7 +12,7 @@ import (
 	"lovers/internal/infrastructure/repositories"
 	user2 "lovers/internal/presentation/user"
 	"lovers/internal/shared/infrastructure/db"
-	"lovers/internal/use_cases/user"
+	"lovers/internal/usecases/user"
 )
 
 // Injectors from wire.go:

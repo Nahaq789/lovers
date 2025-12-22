@@ -1,7 +1,7 @@
 package member
 
 import (
-	valueObjectUuid "lovers/internal/domain/models/value_objects/uuid"
+	valueObjectUuid "lovers/internal/domain/models/valueobjects/uuid"
 
 	"github.com/google/uuid"
 )
@@ -35,3 +35,4 @@ func NewGroupMemberIdFromString(s string) (GroupMemberId, error) {
 func (gm GroupMemberId) GetValue() string {
 	return gm.value.String()
 }
+

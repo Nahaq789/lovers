@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"lovers/internal/domain/models/aggregates/user"
-	userid "lovers/internal/domain/models/user/user_id"
-	username "lovers/internal/domain/models/user/user_name"
-	createdat "lovers/internal/domain/models/value_objects/createdAt"
-	"lovers/internal/domain/models/value_objects/email"
-	updatedat "lovers/internal/domain/models/value_objects/updatedAt"
+	"lovers/internal/domain/models/user/userid"
+	"lovers/internal/domain/models/user/username"
+	"lovers/internal/domain/models/valueobjects/createdat"
+	"lovers/internal/domain/models/valueobjects/email"
+	"lovers/internal/domain/models/valueobjects/updatedat"
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
-	userDto "lovers/internal/use_cases/dto/user"
+	userDto "lovers/internal/usecases/dto/user"
 )
 
 type UserRegistration struct {

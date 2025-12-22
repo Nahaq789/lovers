@@ -8,13 +8,13 @@ import (
 	"lovers/internal/infrastructure/repositories"
 	authController "lovers/internal/presentation/auth"
 	"lovers/internal/shared/config"
-	"lovers/internal/shared/infrastructure/sharedAws"
-	use_case "lovers/internal/use_cases/auth"
+	"lovers/internal/shared/infrastructure/sharedaws"
+	use_case "lovers/internal/usecases/auth"
 
 	"github.com/google/wire"
 )
 
-func ProvideAuthRepository(client *sharedAws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
+func ProvideAuthRepository(client *sharedaws.CognitoClient, cognitoConfig *config.CognitoConfig) *repositories.AuthRepositoryImpl {
 	repository := repositories.NewAuthRepositoryImpl(client, cognitoConfig)
 	return repository
 }
@@ -31,7 +31,7 @@ type AuthSet struct {
 	AuthController *authController.AuthController
 }
 
-func Initialize(client *sharedAws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
+func Initialize(client *sharedaws.CognitoClient, cfg *config.CognitoConfig) *AuthSet {
 	wire.Build(
 		authRepositorySet,
 		signUpSet,

@@ -1,11 +1,11 @@
 package user
 
 import (
-	userid "lovers/internal/domain/models/user/user_id"
-	username "lovers/internal/domain/models/user/user_name"
-	createdat "lovers/internal/domain/models/value_objects/createdAt"
-	"lovers/internal/domain/models/value_objects/email"
-	updatedat "lovers/internal/domain/models/value_objects/updatedAt"
+	userid "lovers/internal/domain/models/user/userid"
+	username "lovers/internal/domain/models/user/username"
+	createdat "lovers/internal/domain/models/valueobjects/createdat"
+	"lovers/internal/domain/models/valueobjects/email"
+	updatedat "lovers/internal/domain/models/valueobjects/updatedat"
 )
 
 type UserAggregate struct {

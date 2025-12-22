@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"log/slog"
 	"lovers/internal/shared/infrastructure/db"
-	"lovers/internal/shared/infrastructure/sharedAws"
+	"lovers/internal/shared/infrastructure/sharedaws"
 	"os"
 )
 
-func InitDB(ctx context.Context, l *slog.Logger, parameterStore *sharedAws.ParameterStoreClient) (*db.DbClient, error) {
+func InitDB(ctx context.Context, l *slog.Logger, parameterStore *sharedaws.ParameterStoreClient) (*db.DbClient, error) {
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
