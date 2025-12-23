@@ -72,7 +72,7 @@ func (ta *TemplateAggregate) GetDetails() []expense.TemplateExpense {
 func (ta *TemplateAggregate) AddDetail(d expense.TemplateExpense) error {
 	for _, exist := range ta.details {
 		if exist.Equal(d.GetTemplateExpenseId()) {
-			return errors.New("同じ明細がすでに存在します。")
+			return errors.New("同じ支出がすでに存在します。")
 		}
 	}
 
@@ -88,5 +88,5 @@ func (ta *TemplateAggregate) RemoveDetail(d expenseid.TemplateExpenseId) error {
 		}
 	}
 
-	return errors.New("削除対象の明細が見つかりませんでした。")
+	return errors.New("削除対象の支出が見つかりませんでした。")
 }

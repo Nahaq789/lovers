@@ -36,3 +36,6 @@ func (e ExpenseId) GetValue() string {
 	return e.value.String()
 }
 
+func (e ExpenseId) Equal(n ExpenseId) bool {
+	return e.value == n.value
+}
