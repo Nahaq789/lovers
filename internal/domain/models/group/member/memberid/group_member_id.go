@@ -1,4 +1,4 @@
-package member
+package memberid
 
 import (
 	valueObjectUuid "lovers/internal/domain/models/valueobjects/uuid"
@@ -35,4 +35,3 @@ func NewGroupMemberIdFromString(s string) (GroupMemberId, error) {
 func (gm GroupMemberId) GetValue() string {
 	return gm.value.String()
 }
-

@@ -1,4 +1,4 @@
-package expense
+package expenseid
 
 import (
 	valueObjectUuid "lovers/internal/domain/models/valueobjects/uuid"
@@ -35,3 +35,4 @@ func NewExpenseIdFromString(s string) (ExpenseId, error) {
 func (e ExpenseId) GetValue() string {
 	return e.value.String()
 }
+

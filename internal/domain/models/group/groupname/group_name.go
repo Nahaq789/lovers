@@ -1,4 +1,4 @@
-package group
+package groupname
 
 import "errors"
 

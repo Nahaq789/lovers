@@ -1,4 +1,4 @@
-package detail
+package detailid
 
 import (
 	"github.com/google/uuid"

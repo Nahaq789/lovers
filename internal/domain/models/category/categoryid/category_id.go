@@ -1,4 +1,4 @@
-package category
+package categoryid
 
 import (
 	"github.com/google/uuid"
@@ -34,4 +34,3 @@ func NewCategoryIdFromString(s string) (CategoryId, error) {
 func (c CategoryId) GetValue() string {
 	return c.value.String()
 }
-
