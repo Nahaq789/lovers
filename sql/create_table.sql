@@ -133,9 +133,9 @@ COMMENT ON COLUMN template.group_id IS '所属グループID';
 COMMENT ON COLUMN template.created_by IS 'テンプレート作成者のユーザーID';
 COMMENT ON COLUMN template.template_name IS 'テンプレート名';
 
--- 8. template_detail テーブル
-CREATE TABLE IF NOT EXISTS template_detail (
-    template_detail_id UUID PRIMARY KEY,
+-- 8. template_expense テーブル
+CREATE TABLE IF NOT EXISTS template_expense (
+    template_expense_id UUID PRIMARY KEY,
     template_id UUID NOT NULL,
     category_id UUID NOT NULL,
     amount BIGINT NOT NULL,
@@ -144,18 +144,18 @@ CREATE TABLE IF NOT EXISTS template_detail (
     description TEXT,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
-    CONSTRAINT fk_template_detail_template FOREIGN KEY (template_id) REFERENCES template(template_id),
-    CONSTRAINT fk_template_detail_category FOREIGN KEY (category_id) REFERENCES category(category_id)
+    CONSTRAINT fk_template_expense_template FOREIGN KEY (template_id) REFERENCES template(template_id),
+    CONSTRAINT fk_template_expense_category FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
-COMMENT ON TABLE template_detail IS 'テンプレート明細';
-COMMENT ON COLUMN template_detail.template_detail_id IS 'テンプレート明細ID（主キー）';
-COMMENT ON COLUMN template_detail.template_id IS '所属テンプレートID';
-COMMENT ON COLUMN template_detail.category_id IS 'カテゴリID';
-COMMENT ON COLUMN template_detail.amount IS '金額';
-COMMENT ON COLUMN template_detail.nominal IS '名目';
-COMMENT ON COLUMN template_detail.payment_date IS '支払日';
-COMMENT ON COLUMN template_detail.description IS '説明';
+COMMENT ON TABLE template_expense IS 'テンプレート支出';
+COMMENT ON COLUMN template_expense.template_expense_id IS 'テンプレート支出ID（主キー）';
+COMMENT ON COLUMN template_expense.template_id IS '所属テンプレートID';
+COMMENT ON COLUMN template_expense.category_id IS 'カテゴリID';
+COMMENT ON COLUMN template_expense.amount IS '金額';
+COMMENT ON COLUMN template_expense.nominal IS '名目';
+COMMENT ON COLUMN template_expense.payment_date IS '支払日';
+COMMENT ON COLUMN template_expense.description IS '説明';
 
 -- インデックス作成
 CREATE INDEX IF NOT EXISTS idx_group_member_group_id ON group_member(group_id);
@@ -169,4 +169,4 @@ CREATE INDEX IF NOT EXISTS idx_expense_log_group_id ON expense_log(group_id);
 CREATE INDEX IF NOT EXISTS idx_expense_log_created_at ON expense_log(created_at);
 CREATE INDEX IF NOT EXISTS idx_category_group_id ON category(group_id);
 CREATE INDEX IF NOT EXISTS idx_template_group_id ON template(group_id);
-CREATE INDEX IF NOT EXISTS idx_template_detail_template_id ON template_detail(template_id);
+CREATE INDEX IF NOT EXISTS idx_template_expense_template_id ON template_expense(template_id);

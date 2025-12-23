@@ -3,8 +3,8 @@ package template
 import (
 	"errors"
 	"lovers/internal/domain/models/group/groupid"
-	"lovers/internal/domain/models/template/detail"
-	"lovers/internal/domain/models/template/detail/detailid"
+	"lovers/internal/domain/models/template/expense"
+	"lovers/internal/domain/models/template/expense/expenseid"
 	"lovers/internal/domain/models/template/templateid"
 	"lovers/internal/domain/models/template/templatename"
 	"lovers/internal/domain/models/user/userid"
@@ -19,7 +19,7 @@ type TemplateAggregate struct {
 	template_name templatename.TemplateName
 	created_at    createdat.CreatedAt
 	updated_at    updatedat.UpdatedAt
-	details       []detail.TemplateDetail
+	details       []expense.TemplateExpense
 }
 
 func NewTemplateAggregate(
@@ -37,7 +37,7 @@ func NewTemplateAggregate(
 		template_name: templateName,
 		created_at:    createdAt,
 		updated_at:    updatedAt,
-		details:       []detail.TemplateDetail{},
+		details:       []expense.TemplateExpense{},
 	}
 }
 
@@ -65,13 +65,13 @@ func (ta *TemplateAggregate) GetUpdatedAt() updatedat.UpdatedAt {
 	return ta.updated_at
 }
 
-func (ta *TemplateAggregate) GetDetails() []detail.TemplateDetail {
+func (ta *TemplateAggregate) GetDetails() []expense.TemplateExpense {
 	return ta.details
 }
 
-func (ta *TemplateAggregate) AddDetail(d detail.TemplateDetail) error {
+func (ta *TemplateAggregate) AddDetail(d expense.TemplateExpense) error {
 	for _, exist := range ta.details {
-		if exist.Equal(d.GetTemplateDetailId()) {
+		if exist.Equal(d.GetTemplateExpenseId()) {
 			return errors.New("同じ明細がすでに存在します。")
 		}
 	}
@@ -80,7 +80,7 @@ func (ta *TemplateAggregate) AddDetail(d detail.TemplateDetail) error {
 	return nil
 }
 
-func (ta *TemplateAggregate) RemoveDetail(d detailid.TemplateDetailId) error {
+func (ta *TemplateAggregate) RemoveDetail(d expenseid.TemplateExpenseId) error {
 	for i, exist := range ta.details {
 		if exist.Equal(d) {
 			ta.details = append(ta.details[:i], ta.details[i+1:]...)

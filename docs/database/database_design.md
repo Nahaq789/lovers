@@ -13,27 +13,30 @@ erDiagram
     user ||--o{ category : "creates"
     group ||--o{ template : "has"
     user ||--o{ template : "creates"
-    template ||--o{ template_detail : "has"
-    category ||--o{ template_detail : "categorizes"
+    template ||--o{ template_expense : "has"
+    category ||--o{ template_expense : "categorizes"
 
     user {
         uuid user_id PK
         varchar email
         varchar user_name
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     group {
         uuid group_id PK
         uuid created_by FK
         varchar group_name
-        timestamp created_at
-        timestamp updated_at
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     group_member {
         uuid group_member_id PK
         uuid group_id FK
         uuid user_id FK
+        timestamptz created_at
     }
 
     expense {
@@ -43,11 +46,11 @@ erDiagram
         uuid category_id FK
         bigint amount
         varchar nominal
-        timestamp payment_date
+        timestamptz payment_date
         text description
-        timestamp deleted_at
-        timestamp created_at
-        timestamp updated_at
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     expense_log {
@@ -58,7 +61,7 @@ erDiagram
         varchar operation
         jsonb before_data
         jsonb after_data
-        timestamp created_at
+        timestamptz created_at
     }
 
     category {
@@ -66,8 +69,8 @@ erDiagram
         uuid group_id FK
         uuid created_by FK
         varchar category_name
-        timestamp created_at
-        timestamp updated_at
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     template {
@@ -75,19 +78,19 @@ erDiagram
         uuid group_id FK
         uuid created_by FK
         varchar template_name
-        timestamp created_at
-        timestamp updated_at
+        timestamptz created_at
+        timestamptz updated_at
     }
 
-    template_detail {
-        uuid template_detail_id PK
+    template_expense {
+        uuid template_expense_id PK
         uuid template_id FK
         uuid category_id FK
         bigint amount
         varchar nominal
-        timestamp payment_date
+        timestamptz payment_date
         text description
-        timestamp created_at
-        timestamp updated_at
+        timestamptz created_at
+        timestamptz updated_at
     }
 ```
