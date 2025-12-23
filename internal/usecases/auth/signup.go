@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"lovers/internal/domain/models/aggregates/authaggregate"
+	"lovers/internal/domain/models/aggregates/auth"
 	"lovers/internal/domain/models/valueobjects/email"
 	"lovers/internal/domain/models/valueobjects/password"
 	"lovers/internal/domain/repositories"

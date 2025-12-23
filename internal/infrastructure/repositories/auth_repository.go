@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"lovers/internal/domain/models/aggregates/authaggregate"
+	"lovers/internal/domain/models/aggregates/auth"
 	"lovers/internal/shared/config"
 	"lovers/internal/shared/infrastructure/sharedaws"
 

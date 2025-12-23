@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"lovers/internal/domain/models/aggregates/authaggregate"
+	"lovers/internal/domain/models/aggregates/auth"
 )
 
 type AuthRepository interface {
