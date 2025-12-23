@@ -1,4 +1,4 @@
-package templateid
+package templatename
 
 import "errors"
 
