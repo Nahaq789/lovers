@@ -1,8 +1,8 @@
 package auth
 
 type SignUpDto struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func NewSignUpDto(email, password string) *SignUpDto {
