@@ -30,13 +30,13 @@ func (ur *UserRegistration) Execute(ctx context.Context, d *userDto.UserRegistra
 
 	userId, err := userid.NewUserIdFromString(d.UserId)
 	if err != nil {
-		l.ErrorContext(ctx, "ユーザー登録処理でエラーが発生しました。", "error", err)
+		l.ErrorContext(ctx, "ユーザーIDの取得に失敗しました。", "error", err)
 		return err
 	}
 
 	email, err := email.NewEmail(d.Email)
 	if err != nil {
-		l.ErrorContext(ctx, "ユーザー登録処理でエラーが発生しました。", "error", err)
+		l.ErrorContext(ctx, "メールアドレスの検証に失敗しました。", "error", err)
 		return err
 	}
 
@@ -45,13 +45,13 @@ func (ur *UserRegistration) Execute(ctx context.Context, d *userDto.UserRegistra
 		if err == nil {
 			return errors.New("ユーザーはすでに登録されています。")
 		}
-		l.ErrorContext(ctx, "ユーザー登録処理でエラーが発生しました。", "error", err)
+		l.ErrorContext(ctx, "ユーザー重複の検証に失敗しました。", "error", err)
 		return err
 	}
 
 	userName, err := username.NewUserName(d.UserName)
 	if err != nil {
-		l.ErrorContext(ctx, "ユーザー登録処理でエラーが発生しました。", "error", err)
+		l.ErrorContext(ctx, "ユーザー名の検証に失敗しました。", "error", err)
 		return err
 	}
 
@@ -61,10 +61,10 @@ func (ur *UserRegistration) Execute(ctx context.Context, d *userDto.UserRegistra
 
 	registerErr := ur.userRepository.Register(ctx, *agg)
 	if registerErr != nil {
-		l.ErrorContext(ctx, "ユーザー登録処理でエラーが発生しました。", "error", err)
+		l.ErrorContext(ctx, "データベースの保存に失敗しました。", "error", err)
 		return registerErr
 	}
 
-	l.InfoContext(ctx, "ユーザー登録処理を終了します。")
+	l.InfoContext(ctx, "ユーザー登録処理が正常に完了しました。")
 	return nil
 }
