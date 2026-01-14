@@ -2,17 +2,17 @@ package user
 
 import (
 	userDto "lovers/internal/usecases/dto/user"
-	user_registration "lovers/internal/usecases/user"
+	userRegistration "lovers/internal/usecases/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	registration *user_registration.UserRegistration
+	registration *userRegistration.UserRegistration
 }
 
-func NewUserController(r *user_registration.UserRegistration) *UserController {
+func NewUserController(r *userRegistration.UserRegistration) *UserController {
 	return &UserController{registration: r}
 }
 
