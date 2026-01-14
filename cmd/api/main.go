@@ -44,11 +44,13 @@ func main() {
 	}
 
 	userSet := initialize.InitUser(ctxWithLogger, db)
+	groupSet := initialize.InitGroup(ctxWithLogger, db)
 
 	r := gin.Default()
 	r.ContextWithFallback = true
 	AuthRouter(r, *authSet)
 	UserRouter(r, *userSet)
+	GroupRouter(r, *groupSet)
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: r.Handler(),

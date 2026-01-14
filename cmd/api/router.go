@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	authDi "lovers/cmd/di/auth"
+	"lovers/cmd/di/group"
 	"lovers/cmd/di/user"
 	"lovers/internal/presentation/middleware"
 	"time"
@@ -35,5 +36,16 @@ func UserRouter(r gin.IRouter, userSet user.UserSet) {
 
 	{
 		v1.POST("/user/register", userSet.UserController.Registration)
+	}
+}
+
+func GroupRouter(r gin.IRouter, groupSet group.GroupSet) {
+	v1 := r.Group("api/v1")
+	v1.Use(middleware.TraceMiddleware())
+	v1.Use(middleware.LoggingMiddleware())
+	v1.Use(middleware.AuthMiddleware())
+
+	{
+		v1.POST("/group/create", groupSet.GroupController.Create)
 	}
 }
