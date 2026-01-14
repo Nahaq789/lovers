@@ -12,6 +12,9 @@ set dotenv-load := true
 @di_user:
     wire ./cmd/di/user
 
+@di_group:
+    wire ./cmd/di/group
+
 @test:
     go test ./... -cover
 
