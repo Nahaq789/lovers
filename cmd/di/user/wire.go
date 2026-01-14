@@ -8,7 +8,7 @@ import (
 	"lovers/internal/infrastructure/repositories"
 	"lovers/internal/presentation/user"
 	"lovers/internal/shared/infrastructure/db"
-	user_registration "lovers/internal/usecases/user"
+	userRegistration "lovers/internal/usecases/user"
 
 	"github.com/google/wire"
 )
@@ -23,7 +23,7 @@ var userRepositorySet = wire.NewSet(
 	wire.Bind(new(domainRepos.UserRepository), new(*repositories.UserRepositoryImpl)),
 )
 
-var registrationSet = wire.NewSet(user_registration.NewUserRegistration)
+var registrationSet = wire.NewSet(userRegistration.NewUserRegistration)
 var userControllerSet = wire.NewSet(user.NewUserController)
 
 type UserSet struct {
