@@ -17,14 +17,14 @@ func NewTemplateRepository(d *db.DbClient) *TemplateRepositoryImpl {
 
 func (t *TemplateRepositoryImpl) Create(ctx context.Context, template template.TemplateAggregate) error {
 	l := logger.FromContext(ctx)
-	query := `insert into "template" (template_id, group_id, created_by, template_name, created_at, updated_at), values ($1, $2, $3, $4, $5, $6)`
+	query := `insert into "template" (template_id, group_id, created_by, template_name, created_at, updated_at) values ($1, $2, $3, $4, $5, $6)`
 	c := t.db.GetClient()
 	_, err := c.ExecContext(ctx, query,
 		template.GetTemplateId().GetValue(),
 		template.GetGroupId().GetValue(),
 		template.GetCreatedBy().GetValue(),
 		template.GetTemplateName().GetValue(),
-		template.GetCreatedBy().GetValue(),
+		template.GetCreatedAt().GetValue(),
 		template.GetUpdatedAt().GetValue(),
 	)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	authDi "lovers/cmd/di/auth"
 	"lovers/cmd/di/group"
+	"lovers/cmd/di/template"
 	"lovers/cmd/di/user"
 	"lovers/internal/presentation/middleware"
 	"time"
@@ -47,5 +48,16 @@ func GroupRouter(r gin.IRouter, groupSet group.GroupSet) {
 
 	{
 		v1.POST("/group/create", groupSet.GroupController.Create)
+	}
+}
+
+func TemplateRouter(r gin.IRouter, templateSet template.TemplateSet) {
+	v1 := r.Group("api/v1")
+	v1.Use(middleware.TraceMiddleware())
+	v1.Use(middleware.LoggingMiddleware())
+	v1.Use(middleware.AuthMiddleware())
+
+	{
+		v1.POST("/template/create", templateSet.TemplateController.Create)
 	}
 }

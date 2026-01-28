@@ -2,6 +2,7 @@ package template
 
 import (
 	"context"
+	"lovers/internal/domain/models/aggregates/template"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/template/templateid"
 	"lovers/internal/domain/models/template/templatename"
@@ -24,7 +25,7 @@ func NewTemplateCreate(t repositories.TemplateRepository) *TemplateCreate {
 	}
 }
 
-func (tc *TemplateCreate) Execute(ctx context.Context, d templateDto.TemplateCreateDto) error {
+func (tc *TemplateCreate) Execute(ctx context.Context, d *templateDto.TemplateCreateDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "テンプレート作成処理を開始します。")
 
@@ -52,7 +53,25 @@ func (tc *TemplateCreate) Execute(ctx context.Context, d templateDto.TemplateCre
 		return err
 	}
 
-	createAt := createdat.NewCreatedAt()
+	createdAt := createdat.NewCreatedAt()
 	updatedAt := updatedat.NewUpdatedAt()
+
+	templateAggregate := template.NewTemplateAggregate(
+		templateId,
+		groupId,
+		userId,
+		templateName,
+		createdAt,
+		updatedAt,
+	)
+
+	dbErr := tc.templateRepository.Create(ctx, *templateAggregate)
+	if dbErr != nil {
+		l.ErrorContext(ctx, "データベース保存に失敗しました。", "error", dbErr)
+		return dbErr
+	}
+
+	l.InfoContext(ctx, "テンプレート作成処理が正常に完了しました。")
+
 	return nil
 }
