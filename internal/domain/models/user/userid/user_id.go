@@ -34,3 +34,7 @@ func NewUserIdFromString(s string) (UserId, error) {
 func (u UserId) GetValue() string {
 	return u.value.String()
 }
+
+func (u UserId) Equal(id UserId) bool {
+	return u.GetValue() == id.GetValue()
+}

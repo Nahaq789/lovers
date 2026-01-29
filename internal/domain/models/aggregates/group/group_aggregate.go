@@ -5,18 +5,20 @@ import (
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/group/groupname"
 	"lovers/internal/domain/models/group/member"
+	"lovers/internal/domain/models/group/member/memberid"
 	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/valueobjects/createdat"
 	"lovers/internal/domain/models/valueobjects/updatedat"
+	"slices"
 )
 
 type GroupAggregate struct {
-	group_id   groupid.GroupId
-	created_by userid.UserId
+	groupId    groupid.GroupId
+	createdBy  userid.UserId
 	group_name groupname.GroupName
-	created_at createdat.CreatedAt
-	updated_at updatedat.UpdatedAt
-	member     []member.GroupMember
+	createdAt  createdat.CreatedAt
+	updatedAt  updatedat.UpdatedAt
+	member     []*member.GroupMember
 }
 
 func NewGroupAggregate(
@@ -27,21 +29,21 @@ func NewGroupAggregate(
 	updatedAt updatedat.UpdatedAt,
 ) *GroupAggregate {
 	return &GroupAggregate{
-		group_id:   groupId,
-		created_by: createdBy,
+		groupId:    groupId,
+		createdBy:  createdBy,
 		group_name: groupName,
-		created_at: createdAt,
-		updated_at: updatedAt,
-		member:     []member.GroupMember{},
+		createdAt:  createdAt,
+		updatedAt:  updatedAt,
+		member:     []*member.GroupMember{},
 	}
 }
 
 func (ga *GroupAggregate) GetGroupId() groupid.GroupId {
-	return ga.group_id
+	return ga.groupId
 }
 
 func (ga *GroupAggregate) GetCreatedBy() userid.UserId {
-	return ga.created_by
+	return ga.createdBy
 }
 
 func (ga *GroupAggregate) GetGroupName() groupname.GroupName {
@@ -49,22 +51,37 @@ func (ga *GroupAggregate) GetGroupName() groupname.GroupName {
 }
 
 func (ga *GroupAggregate) GetCreatedAt() createdat.CreatedAt {
-	return ga.created_at
+	return ga.createdAt
 }
 
 func (ga *GroupAggregate) GetUpdatedAt() updatedat.UpdatedAt {
-	return ga.updated_at
+	return ga.updatedAt
 }
 
-func (ga *GroupAggregate) GetMembers() []member.GroupMember {
+func (ga *GroupAggregate) GetMembers() []*member.GroupMember {
 	return ga.member
 }
 
-func (ga *GroupAggregate) AddMember(m member.GroupMember) error {
+func (ga *GroupAggregate) CreateMember(u userid.UserId) (*member.GroupMember, error) {
+	memberId, err := memberid.NewGroupMemberId()
+	if err != nil {
+		return nil, err
+	}
+
+	member := member.NewGroupMember(memberId, ga.groupId, u)
+	return member, nil
+}
+
+func (ga *GroupAggregate) AddMember(u userid.UserId) error {
 	for _, exist := range ga.member {
-		if exist.Equals(m) {
+		if exist.GetUserId().Equal(u) {
 			return errors.New("ユーザーはすでに追加されています。")
 		}
+	}
+
+	m, err := ga.CreateMember(u)
+	if err != nil {
+		return err
 	}
 
 	ga.member = append(ga.member, m)
@@ -74,7 +91,7 @@ func (ga *GroupAggregate) AddMember(m member.GroupMember) error {
 func (ga *GroupAggregate) RemoveMember(m member.GroupMember) error {
 	for i, exist := range ga.member {
 		if exist.Equals(m) {
-			ga.member = append(ga.member[:i], ga.member[i+1:]...)
+			ga.member = slices.Delete(ga.member, i, i+1)
 			return nil
 		}
 	}
