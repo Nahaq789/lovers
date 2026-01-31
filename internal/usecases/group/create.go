@@ -57,6 +57,9 @@ func (gc *GroupCreate) Execute(ctx context.Context, d *groupDto.GroupCreateDto) 
 		updatedAt,
 	)
 
+	// グループ作成者をメンバーに追加する。
+	group.AddMember(userId)
+
 	dbErr := gc.groupRepository.Create(ctx, *group)
 	if dbErr != nil {
 		l.ErrorContext(ctx, "データベース保存に失敗しました。", "error", dbErr)

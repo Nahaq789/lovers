@@ -29,7 +29,7 @@ func (g *GroupRepositoryImpl) Create(ctx context.Context, group group.GroupAggre
 	defer tx.Rollback()
 
 	groupQuery := `insert into "group" (group_id, created_by, group_name, created_at, updated_at) values ($1, $2, $3, $4, $5)`
-	_, groupErr := c.ExecContext(ctx, groupQuery,
+	_, groupErr := tx.ExecContext(ctx, groupQuery,
 		group.GetGroupId().GetValue(),
 		group.GetCreatedBy().GetValue(),
 		group.GetGroupName().GetValue(),
@@ -60,13 +60,13 @@ func (g *GroupRepositoryImpl) Create(ctx context.Context, group group.GroupAggre
 			m.GetGroupMemberId().GetValue(),
 			m.GetGroupId().GetValue(),
 			m.GetUserId().GetValue(),
-			group.GetCreatedAt(),
+			m.GetCreatedAt().GetValue(),
 		)
 	}
 
 	memberQuery += strings.Join(placeholders, ", ")
 
-	_, memberErr := c.ExecContext(ctx, memberQuery, values...)
+	_, memberErr := tx.ExecContext(ctx, memberQuery, values...)
 	if memberErr != nil {
 		l.ErrorContext(ctx, "failed to add group member", "error", memberErr)
 		return memberErr

@@ -68,7 +68,8 @@ func (ga *GroupAggregate) CreateMember(u userid.UserId) (*member.GroupMember, er
 		return nil, err
 	}
 
-	member := member.NewGroupMember(memberId, ga.groupId, u)
+	createdAt := createdat.NewCreatedAt()
+	member := member.NewGroupMember(memberId, ga.groupId, u, createdAt)
 	return member, nil
 }
 

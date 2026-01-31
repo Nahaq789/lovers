@@ -4,23 +4,27 @@ import (
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/group/member/memberid"
 	"lovers/internal/domain/models/user/userid"
+	"lovers/internal/domain/models/valueobjects/createdat"
 )
 
 type GroupMember struct {
 	group_member_id memberid.GroupMemberId
 	group_id        groupid.GroupId
 	user_id         userid.UserId
+	createdAt       createdat.CreatedAt
 }
 
 func NewGroupMember(
 	groupMemberId memberid.GroupMemberId,
 	groupId groupid.GroupId,
 	userId userid.UserId,
+	createdAt createdat.CreatedAt,
 ) *GroupMember {
 	return &GroupMember{
 		group_member_id: groupMemberId,
 		group_id:        groupId,
 		user_id:         userId,
+		createdAt:       createdAt,
 	}
 }
 
@@ -34,6 +38,10 @@ func (gm *GroupMember) GetGroupId() groupid.GroupId {
 
 func (gm *GroupMember) GetUserId() userid.UserId {
 	return gm.user_id
+}
+
+func (gm *GroupMember) GetCreatedAt() createdat.CreatedAt {
+	return gm.createdAt
 }
 
 func (gm *GroupMember) isSameGroup(g groupid.GroupId) bool {

@@ -37,7 +37,7 @@ func (g *GroupController) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "user created",
+		"message": "group created",
 	})
 	return
 }
