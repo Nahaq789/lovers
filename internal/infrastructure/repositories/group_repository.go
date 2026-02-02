@@ -6,6 +6,7 @@ import (
 	"lovers/internal/domain/models/aggregates/group"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/shared/infrastructure/logger"
+	"lovers/internal/shared/infrastructure/transaction"
 	"strings"
 )
 
@@ -19,14 +20,7 @@ func NewGroupRepository(d *db.DbClient) *GroupRepositoryImpl {
 
 func (g *GroupRepositoryImpl) Create(ctx context.Context, group group.GroupAggregate) error {
 	l := logger.FromContext(ctx)
-	c := g.db.GetClient()
-
-	tx, txErr := c.BeginTx(ctx, nil)
-	if txErr != nil {
-		l.ErrorContext(ctx, "failed begin transaction", "error", txErr)
-		return txErr
-	}
-	defer tx.Rollback()
+	tx := transaction.FromContext(ctx)
 
 	groupQuery := `insert into "group" (group_id, created_by, group_name, created_at, updated_at) values ($1, $2, $3, $4, $5)`
 	_, groupErr := tx.ExecContext(ctx, groupQuery,
@@ -72,5 +66,5 @@ func (g *GroupRepositoryImpl) Create(ctx context.Context, group group.GroupAggre
 		return memberErr
 	}
 
-	return tx.Commit()
+	return nil
 }

@@ -12,15 +12,18 @@ import (
 	"lovers/internal/shared/infrastructure/logger"
 	"lovers/internal/shared/infrastructure/security/userid"
 	groupDto "lovers/internal/usecases/dto/group"
+	"lovers/internal/usecases/port"
 )
 
 type GroupCreate struct {
 	groupRepository repositories.GroupRepository
+	txManager       port.TransactionManager
 }
 
-func NewGroupCreate(g repositories.GroupRepository) *GroupCreate {
+func NewGroupCreate(g repositories.GroupRepository, tm port.TransactionManager) *GroupCreate {
 	return &GroupCreate{
 		groupRepository: g,
+		txManager:       tm,
 	}
 }
 
@@ -60,13 +63,14 @@ func (gc *GroupCreate) Execute(ctx context.Context, d *groupDto.GroupCreateDto) 
 	// グループ作成者をメンバーに追加する。
 	group.AddMember(userId)
 
-	dbErr := gc.groupRepository.Create(ctx, *group)
-	if dbErr != nil {
-		l.ErrorContext(ctx, "データベース保存に失敗しました。", "error", dbErr)
-		return dbErr
-	}
+	return gc.txManager.WithTransaction(ctx, func(txCtx context.Context) error {
+		dbErr := gc.groupRepository.Create(txCtx, *group)
+		if dbErr != nil {
+			l.ErrorContext(txCtx, "データベース保存に失敗しました。", "error", dbErr)
+			return dbErr
+		}
 
-	l.InfoContext(ctx, "グループ作成処理が正常に完了しました。")
-
-	return nil
+		l.InfoContext(txCtx, "グループ作成処理が正常に完了しました。")
+		return nil
+	})
 }

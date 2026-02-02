@@ -9,17 +9,20 @@ package group
 import (
 	"github.com/google/wire"
 	repositories2 "lovers/internal/domain/repositories"
+	"lovers/internal/infrastructure/port"
 	"lovers/internal/infrastructure/repositories"
 	group2 "lovers/internal/presentation/group"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/usecases/group"
+	port2 "lovers/internal/usecases/port"
 )
 
 // Injectors from wire.go:
 
 func Initialize(d *db.DbClient) *GroupSet {
 	groupRepositoryImpl := ProvideGroupRepository(d)
-	groupCreate := group.NewGroupCreate(groupRepositoryImpl)
+	transactionManagerImpl := ProvideTransactionManager(d)
+	groupCreate := group.NewGroupCreate(groupRepositoryImpl, transactionManagerImpl)
 	groupController := group2.NewGroupController(groupCreate)
 	groupSet := &GroupSet{
 		GroupController: groupController,
@@ -36,6 +39,15 @@ func ProvideGroupRepository(d *db.DbClient) *repositories.GroupRepositoryImpl {
 
 var groupRepositorySet = wire.NewSet(
 	ProvideGroupRepository, wire.Bind(new(repositories2.GroupRepository), new(*repositories.GroupRepositoryImpl)),
+)
+
+func ProvideTransactionManager(d *db.DbClient) *port.TransactionManagerImpl {
+	manager := port.NewTransactionManager(d)
+	return manager
+}
+
+var transactionManagerSet = wire.NewSet(
+	ProvideTransactionManager, wire.Bind(new(port2.TransactionManager), new(*port.TransactionManagerImpl)),
 )
 
 var createSet = wire.NewSet(group.NewGroupCreate)
