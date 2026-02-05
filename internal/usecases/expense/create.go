@@ -4,7 +4,6 @@ import (
 	"context"
 	"lovers/internal/domain/models/category/categoryid"
 	"lovers/internal/domain/models/group/groupid"
-	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/valueobjects/description"
 	"lovers/internal/domain/models/valueobjects/nominal"
 	"lovers/internal/domain/models/valueobjects/paymentdate"
@@ -58,15 +57,6 @@ func (ec *ExpenseCreate) Execute(ctx context.Context, d *expenseDto.ExpenseCreat
 	if err != nil {
 		l.ErrorContext(ctx, "グループメンバーの取得に失敗しました。", "error", err)
 		return err
-	}
-
-	return nil
-}
-
-func (ec *ExpenseCreate) validateGroupMember(p []expenseDto.PaymentDetail, u []userid.UserId) error {
-	paymentUserIds := make(map[string]bool)
-	for _, detail := range p {
-		paymentUserIds[detail.UserId] = true
 	}
 
 	return nil

@@ -6,6 +6,7 @@ import (
 	"lovers/internal/domain/models/expense/expenseid"
 	paymentdetail "lovers/internal/domain/models/expense/paymentuser"
 	"lovers/internal/domain/models/group/groupid"
+	"lovers/internal/domain/models/valueobjects/amount"
 	"lovers/internal/domain/models/valueobjects/createdat"
 	"lovers/internal/domain/models/valueobjects/deletedat"
 	"lovers/internal/domain/models/valueobjects/description"
@@ -15,23 +16,24 @@ import (
 )
 
 type ExpenseAggregate struct {
-	expenseId   expenseid.ExpenseId
-	groupId     groupid.GroupId
-	categoryId  categoryid.CategoryId
-	paymentUser paymentdetail.PaymentUser
-	nominal     nominal.Nominal
-	paymentDate paymentdate.PaymentDate
-	description description.Description
-	deletedAt   *deletedat.DeletedAt
-	createdAt   createdat.CreatedAt
-	updatedAt   updatedat.UpdatedAt
+	expenseId    expenseid.ExpenseId
+	groupId      groupid.GroupId
+	categoryId   categoryid.CategoryId
+	amount       amount.Amount
+	paymentUsers paymentdetail.PaymentUsers
+	nominal      nominal.Nominal
+	paymentDate  paymentdate.PaymentDate
+	description  description.Description
+	deletedAt    *deletedat.DeletedAt
+	createdAt    createdat.CreatedAt
+	updatedAt    updatedat.UpdatedAt
 }
 
 func NewExpenseAggregate(
 	expenseId expenseid.ExpenseId,
 	groupId groupid.GroupId,
 	categoryId categoryid.CategoryId,
-	paymentUser paymentdetail.PaymentUser,
+	paymentUsers paymentdetail.PaymentUsers,
 	nom nominal.Nominal,
 	paymentDate paymentdate.PaymentDate,
 	desc description.Description,
@@ -39,16 +41,16 @@ func NewExpenseAggregate(
 	updatedAt updatedat.UpdatedAt,
 ) *ExpenseAggregate {
 	return &ExpenseAggregate{
-		expenseId:   expenseId,
-		groupId:     groupId,
-		categoryId:  categoryId,
-		paymentUser: paymentUser,
-		nominal:     nom,
-		paymentDate: paymentDate,
-		description: desc,
-		deletedAt:   nil,
-		createdAt:   createdAt,
-		updatedAt:   updatedAt,
+		expenseId:    expenseId,
+		groupId:      groupId,
+		categoryId:   categoryId,
+		paymentUsers: paymentUsers,
+		nominal:      nom,
+		paymentDate:  paymentDate,
+		description:  desc,
+		deletedAt:    nil,
+		createdAt:    createdAt,
+		updatedAt:    updatedAt,
 	}
 }
 
@@ -64,8 +66,8 @@ func (ea *ExpenseAggregate) GetCategoryId() categoryid.CategoryId {
 	return ea.categoryId
 }
 
-func (ea *ExpenseAggregate) GetPaymentUser() paymentdetail.PaymentUser {
-	return ea.paymentUser
+func (ea *ExpenseAggregate) GetPaymentUsers() paymentdetail.PaymentUsers {
+	return ea.paymentUsers
 }
 
 func (ea *ExpenseAggregate) GetNominal() nominal.Nominal {
