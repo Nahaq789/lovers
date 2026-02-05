@@ -1,6 +1,11 @@
 package paymentdate
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
+
+const PaymentDateFormat = "2006-01-02"
 
 type PaymentDate struct {
 	value time.Time
@@ -8,7 +13,16 @@ type PaymentDate struct {
 
 func NewPaymentDate() PaymentDate {
 	now := time.Now().UTC()
-	return PaymentDate{value: now}
+	date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	return PaymentDate{value: date}
+}
+
+func NewPaymentDateFromString(dateStr string) (PaymentDate, error) {
+	t, err := time.Parse(PaymentDateFormat, dateStr)
+	if err != nil {
+		return PaymentDate{}, fmt.Errorf("invalid payment date format (expected YYYY-MM-DD): %w", err)
+	}
+	return PaymentDate{value: t.UTC()}, nil
 }
 
 func (c PaymentDate) GetValue() time.Time {
@@ -16,5 +30,5 @@ func (c PaymentDate) GetValue() time.Time {
 }
 
 func (c PaymentDate) ToString() string {
-	return c.value.UTC().Format(time.RFC3339)
+	return c.value.UTC().Format(PaymentDateFormat)
 }
