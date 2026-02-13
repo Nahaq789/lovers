@@ -39,11 +39,16 @@ func NewExpenseAggregate(
 	desc description.Description,
 	createdAt createdat.CreatedAt,
 	updatedAt updatedat.UpdatedAt,
-) *ExpenseAggregate {
+) (*ExpenseAggregate, error) {
+	amount, err := paymentUsers.TotalAmount()
+	if err != nil {
+		return nil, err
+	}
 	return &ExpenseAggregate{
 		expenseId:    expenseId,
 		groupId:      groupId,
 		categoryId:   categoryId,
+		amount:       amount,
 		paymentUsers: paymentUsers,
 		nominal:      nom,
 		paymentDate:  paymentDate,
@@ -51,7 +56,7 @@ func NewExpenseAggregate(
 		deletedAt:    nil,
 		createdAt:    createdAt,
 		updatedAt:    updatedAt,
-	}
+	}, nil
 }
 
 func (ea *ExpenseAggregate) GetExpenseId() expenseid.ExpenseId {

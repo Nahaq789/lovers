@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"lovers/internal/domain/models/group/groupid"
+	"lovers/internal/domain/models/group/member"
 	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/shared/infrastructure/logger"
@@ -16,7 +17,7 @@ func NewGroupQueryService(d *db.DbClient) *GroupQueryServiceImpl {
 	return &GroupQueryServiceImpl{db: d}
 }
 
-func (gq *GroupQueryServiceImpl) FindMemberById(ctx context.Context, groupId groupid.GroupId) ([]userid.UserId, error) {
+func (gq *GroupQueryServiceImpl) FindMemberById(ctx context.Context, groupId groupid.GroupId) (*member.MemberUserIds, error) {
 	c := gq.db.GetClient()
 	l := logger.FromContext(ctx)
 	query := `
@@ -60,5 +61,7 @@ func (gq *GroupQueryServiceImpl) FindMemberById(ctx context.Context, groupId gro
 		l.ErrorContext(ctx, "error occurred during iteration", "error", err)
 		return nil, err
 	}
-	return userIds, nil
+
+	memberIds := member.NewMemberUserIds(userIds)
+	return memberIds, nil
 }

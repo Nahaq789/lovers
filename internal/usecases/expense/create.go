@@ -2,8 +2,12 @@ package expense
 
 import (
 	"context"
+	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/domain/models/category/categoryid"
+	"lovers/internal/domain/models/expense/paymentuser"
 	"lovers/internal/domain/models/group/groupid"
+	"lovers/internal/domain/models/user/userid"
+	"lovers/internal/domain/models/valueobjects/amount"
 	"lovers/internal/domain/models/valueobjects/description"
 	"lovers/internal/domain/models/valueobjects/nominal"
 	"lovers/internal/domain/models/valueobjects/paymentdate"
@@ -59,5 +63,29 @@ func (ec *ExpenseCreate) Execute(ctx context.Context, d *expenseDto.ExpenseCreat
 		return err
 	}
 
+	paymentUsers := make([]*paymentuser.PaymentUser, len(d.PaymentDetails))
+	for _, p := range d.PaymentDetails {
+		userId, err := userid.NewUserIdFromString(p.UserId)
+		if err != nil {
+			l.ErrorContext(ctx, "ユーザIDの生成に失敗しました。", "error", err)
+			return err
+		}
+
+		amount, err := amount.NewAmount(int64(p.Amount))
+		if err != nil {
+			l.ErrorContext(ctx, "金額の生成に失敗しました。", "error", err)
+			return err
+		}
+		detail := paymentuser.NewExpensePaymentDetail(userId, amount)
+		paymentUsers = append(paymentUsers, detail)
+	}
+
+	p := paymentuser.NewExpensePaymentUsers(paymentUsers)
+	err = groupMembers.ValidateExpensePayments(p)
+	if err != nil {
+		return err
+	}
+
+	// 集約作成
 	return nil
 }

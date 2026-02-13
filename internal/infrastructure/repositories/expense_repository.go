@@ -28,7 +28,7 @@ func (e *ExpenseRepositoryImpl) Add(ctx context.Context, expense expense.Expense
 
 	expenseQuery := `insert into expense (expense_id, group_id, payment_by, category_id, amount, nominal, payment_date, description, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
-	paymentUser := expense.GetPaymentUser()
+	paymentUser := expense.GetPaymentUsers()
 	_, err := tx.ExecContext(ctx, expenseQuery,
 		expense.GetExpenseId(),
 		expense.GetGroupId(),

@@ -14,9 +14,9 @@ func NewMemberUserIds(m []userid.UserId) *MemberUserIds {
 	return &MemberUserIds{members: m}
 }
 
-func (gm *MemberUserIds) ValidateExpensePayments(details []paymentuser.PaymentUser) error {
+func (gm *MemberUserIds) ValidateExpensePayments(details *paymentuser.PaymentUsers) error {
 	paymentUserIds := make(map[userid.UserId]bool)
-	for _, detail := range details {
+	for _, detail := range details.GetPaymentUsers() {
 		paymentUserIds[detail.GetUserId()] = true
 	}
 
@@ -33,7 +33,7 @@ func (gm *MemberUserIds) ValidateExpensePayments(details []paymentuser.PaymentUs
 	}
 
 	// 2. PaymentDetailsのすべてのUserIdがグループメンバーか
-	for _, detail := range details {
+	for _, detail := range details.GetPaymentUsers() {
 		if !memberIds[detail.GetUserId()] {
 			return fmt.Errorf("ユーザー: %s はグループメンバーに含まれていません。", detail.GetUserId().GetValue())
 		}
