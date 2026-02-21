@@ -28,22 +28,24 @@ func (e *ExpenseRepositoryImpl) Add(ctx context.Context, expense expense.Expense
 
 	expenseQuery := `insert into expense (expense_id, group_id, payment_by, category_id, amount, nominal, payment_date, description, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
-	paymentUser := expense.GetPaymentUsers()
-	_, err := tx.ExecContext(ctx, expenseQuery,
-		expense.GetExpenseId(),
-		expense.GetGroupId(),
-		paymentUser.GetUserId(),
-		expense.GetCategoryId(),
-		paymentUser.GetAmount(),
-		expense.GetNominal(),
-		expense.GetPaymentDate(),
-		expense.GetDescription(),
-		expense.GetCreatedAt(),
-		expense.GetUpdatedAt())
+	paymentUsers := expense.GetPaymentUsers()
+	for _, u := range paymentUsers.GetPaymentUsers() {
+		_, err := tx.ExecContext(ctx, expenseQuery,
+			expense.GetExpenseId(),
+			expense.GetGroupId(),
+			u.GetUserId(),
+			expense.GetCategoryId(),
+			u.GetAmount(),
+			expense.GetNominal(),
+			expense.GetPaymentDate(),
+			expense.GetDescription(),
+			expense.GetCreatedAt(),
+			expense.GetUpdatedAt())
 
-	if err != nil {
-		l.ErrorContext(ctx, "failed to insert expense", "error", err)
-		return err
+		if err != nil {
+			l.ErrorContext(ctx, "failed to insert expense", "error", err)
+			return err
+		}
 	}
 
 	return tx.Commit()

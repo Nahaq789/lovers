@@ -20,7 +20,7 @@ type ExpenseAggregate struct {
 	groupId      groupid.GroupId
 	categoryId   categoryid.CategoryId
 	amount       amount.Amount
-	paymentUsers paymentdetail.PaymentUsers
+	paymentUsers *paymentdetail.PaymentUsers
 	nominal      nominal.Nominal
 	paymentDate  paymentdate.PaymentDate
 	description  description.Description
@@ -33,7 +33,7 @@ func NewExpenseAggregate(
 	expenseId expenseid.ExpenseId,
 	groupId groupid.GroupId,
 	categoryId categoryid.CategoryId,
-	paymentUsers paymentdetail.PaymentUsers,
+	paymentUsers *paymentdetail.PaymentUsers,
 	nom nominal.Nominal,
 	paymentDate paymentdate.PaymentDate,
 	desc description.Description,
@@ -71,7 +71,7 @@ func (ea *ExpenseAggregate) GetCategoryId() categoryid.CategoryId {
 	return ea.categoryId
 }
 
-func (ea *ExpenseAggregate) GetPaymentUsers() paymentdetail.PaymentUsers {
+func (ea *ExpenseAggregate) GetPaymentUsers() *paymentdetail.PaymentUsers {
 	return ea.paymentUsers
 }
 

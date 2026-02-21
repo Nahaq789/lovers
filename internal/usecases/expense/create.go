@@ -4,13 +4,16 @@ import (
 	"context"
 	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/domain/models/category/categoryid"
+	"lovers/internal/domain/models/expense/expenseid"
 	"lovers/internal/domain/models/expense/paymentuser"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/valueobjects/amount"
+	"lovers/internal/domain/models/valueobjects/createdat"
 	"lovers/internal/domain/models/valueobjects/description"
 	"lovers/internal/domain/models/valueobjects/nominal"
 	"lovers/internal/domain/models/valueobjects/paymentdate"
+	"lovers/internal/domain/models/valueobjects/updatedat"
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
 	expenseDto "lovers/internal/usecases/dto/expense"
@@ -31,6 +34,12 @@ func NewExpenseRepository(er repositories.ExpenseRepository, gq query.GroupQuery
 func (ec *ExpenseCreate) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "明細作成処理を開始します。")
+
+	expenseId, err := expenseid.NewExpenseId()
+	if err != nil {
+		l.ErrorContext(ctx, "明細IDの生成に失敗しました。", "error", err)
+		return err
+	}
 
 	groupId, err := groupid.NewGroupIdFromString(d.GroupId)
 	if err != nil {
@@ -86,6 +95,19 @@ func (ec *ExpenseCreate) Execute(ctx context.Context, d *expenseDto.ExpenseCreat
 		return err
 	}
 
+	createdAt := createdat.NewCreatedAt()
+	updatedAt := updatedat.NewUpdatedAt()
+
 	// 集約作成
+	expense, err := expense.NewExpenseAggregate(
+		expenseId, groupId, categoryId, p, nominal, paymentDate, description, createdAt, updatedAt,
+	)
+	err = ec.expenseRepository.Add(ctx, expense)
+	if err != nil {
+		l.ErrorContext(ctx, "明細の作成に失敗しました。", "error", err)
+		return err
+	}
+
+	l.InfoContext(ctx, "明細作成処理を終了します。")
 	return nil
 }
