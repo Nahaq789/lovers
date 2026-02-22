@@ -2,9 +2,11 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/shared/infrastructure/logger"
+	"strings"
 )
 
 type ExpenseRepositoryImpl struct {
@@ -26,26 +28,30 @@ func (e *ExpenseRepositoryImpl) Add(ctx context.Context, expense expense.Expense
 	}
 	defer tx.Rollback()
 
-	expenseQuery := `insert into expense (expense_id, group_id, payment_by, category_id, amount, nominal, payment_date, description, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
-
 	paymentUsers := expense.GetPaymentUsers()
-	for _, u := range paymentUsers.GetPaymentUsers() {
-		_, err := tx.ExecContext(ctx, expenseQuery,
-			expense.GetExpenseId(),
-			expense.GetGroupId(),
-			u.GetUserId(),
-			expense.GetCategoryId(),
-			u.GetAmount(),
-			expense.GetNominal(),
-			expense.GetPaymentDate(),
-			expense.GetDescription(),
-			expense.GetCreatedAt(),
-			expense.GetUpdatedAt())
+	s := make([]any, 0, len(paymentUsers.GetPaymentUsers())*10)
+	placeHolders := make([]string, 0, len(paymentUsers.GetPaymentUsers()))
 
-		if err != nil {
-			l.ErrorContext(ctx, "failed to insert expense", "error", err)
-			return err
-		}
+	for i, u := range paymentUsers.GetPaymentUsers() {
+		s = append(s, expense.GetExpenseId())
+		s = append(s, expense.GetGroupId())
+		s = append(s, u.GetUserId())
+		s = append(s, expense.GetCategoryId())
+		s = append(s, u.GetAmount())
+		s = append(s, expense.GetNominal())
+		s = append(s, expense.GetPaymentDate())
+		s = append(s, expense.GetDescription())
+		s = append(s, expense.GetCreatedAt())
+		s = append(s, expense.GetUpdatedAt())
+		placeHolders = append(placeHolders, fmt.Sprintf("($%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d)", i*10+1, i*10+2, i*10+3, i*10+4, i*10+5, i*10+6, i*10+7, i*10+8, i*10+9, i*10+10))
+	}
+
+	expenseQuery := `insert into expense (expense_id, group_id, payment_by, category_id, amount, nominal, payment_date, description, created_at, updated_at) values `
+	expenseQuery += strings.Join(placeHolders, ",")
+	_, err := tx.ExecContext(ctx, expenseQuery, s...)
+	if err != nil {
+		l.ErrorContext(ctx, "failed to insert expense", "error", err)
+		return err
 	}
 
 	return tx.Commit()
