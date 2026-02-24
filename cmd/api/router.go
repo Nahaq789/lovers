@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	authDi "lovers/cmd/di/auth"
+	"lovers/cmd/di/expense"
 	"lovers/cmd/di/group"
 	"lovers/cmd/di/template"
 	"lovers/cmd/di/user"
@@ -59,5 +60,16 @@ func TemplateRouter(r gin.IRouter, templateSet template.TemplateSet) {
 
 	{
 		v1.POST("/template/create", templateSet.TemplateController.Create)
+	}
+}
+
+func ExpenseRouter(r gin.IRouter, expenseSet expense.ExpenseSet) {
+	v1 := r.Group("api/v1")
+	v1.Use(middleware.TraceMiddleware())
+	v1.Use(middleware.LoggingMiddleware())
+	v1.Use(middleware.AuthMiddleware())
+
+	{
+		v1.POST("/expense/create", expenseSet.ExpenseController.Create)
 	}
 }

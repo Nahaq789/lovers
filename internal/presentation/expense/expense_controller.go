@@ -37,7 +37,7 @@ func (e *ExpenseController) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "group created",
+		"message": "expense created",
 	})
 	return
 

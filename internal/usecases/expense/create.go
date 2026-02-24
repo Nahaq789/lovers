@@ -27,7 +27,7 @@ type ExpenseCreate struct {
 	txManager         port.TransactionManager
 }
 
-func NewExpenseRepository(er repositories.ExpenseRepository, gq query.GroupQueryService, tm port.TransactionManager) *ExpenseCreate {
+func NewExpenseCreate(er repositories.ExpenseRepository, gq query.GroupQueryService, tm port.TransactionManager) *ExpenseCreate {
 	return &ExpenseCreate{expenseRepository: er, groupQueryService: gq, txManager: tm}
 }
 
@@ -72,7 +72,7 @@ func (ec *ExpenseCreate) Execute(ctx context.Context, d *expenseDto.ExpenseCreat
 		return err
 	}
 
-	paymentUsers := make([]*paymentuser.PaymentUser, len(d.PaymentDetails))
+	paymentUsers := make([]*paymentuser.PaymentUser, 0, len(d.PaymentDetails))
 	for _, p := range d.PaymentDetails {
 		userId, err := userid.NewUserIdFromString(p.UserId)
 		if err != nil {

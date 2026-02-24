@@ -46,6 +46,7 @@ func main() {
 	userSet := initialize.InitUser(ctxWithLogger, db)
 	groupSet := initialize.InitGroup(ctxWithLogger, db)
 	templateSet := initialize.InitTemplate(ctxWithLogger, db)
+	expenseSet := initialize.InitExpense(ctxWithLogger, db)
 
 	r := gin.Default()
 	r.ContextWithFallback = true
@@ -53,6 +54,7 @@ func main() {
 	UserRouter(r, *userSet)
 	GroupRouter(r, *groupSet)
 	TemplateRouter(r, *templateSet)
+	ExpenseRouter(r, *expenseSet)
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: r.Handler(),
