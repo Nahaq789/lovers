@@ -8,7 +8,6 @@ erDiagram
     category ||--o{ expense : "categorizes"
     expense ||--o{ expense_log : "has history"
     group ||--o{ expense_log : "tracks"
-    user ||--o{ expense_log : "operates"
     group ||--o{ category : "has"
     user ||--o{ category : "creates"
     group ||--o{ template : "has"
@@ -41,8 +40,8 @@ erDiagram
 
     expense {
         uuid expense_id PK
+        uuid user_id PK "複合PK"
         uuid group_id FK
-        uuid payment_by FK
         uuid category_id FK
         bigint amount
         varchar nominal
@@ -55,9 +54,9 @@ erDiagram
 
     expense_log {
         uuid expense_log_id PK
-        uuid expense_id FK
+        uuid expense_id FK "複合FK"
+        uuid user_id FK "複合FK"
         uuid group_id FK
-        uuid user_id FK
         varchar operation
         jsonb before_data
         jsonb after_data
