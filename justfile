@@ -18,12 +18,16 @@ set dotenv-load := true
 @di_template:
     wire ./cmd/di/template
 
+@di_expense:
+    wire ./cmd/di/expense
+
 @di_all:
     just di_aws
     just di_auth
     just di_user
     just di_group
     just di_template
+    just di_expense
 
 @test:
     go test ./... -cover
