@@ -2,6 +2,8 @@ package expense
 
 import (
 	"errors"
+	"lovers/internal/domain/events"
+	"lovers/internal/domain/events/expense"
 	"lovers/internal/domain/models/category/categoryid"
 	"lovers/internal/domain/models/expense/expenseid"
 	paymentdetail "lovers/internal/domain/models/expense/paymentuser"
@@ -27,6 +29,7 @@ type ExpenseAggregate struct {
 	deletedAt    *deletedat.DeletedAt
 	createdAt    createdat.CreatedAt
 	updatedAt    updatedat.UpdatedAt
+	events       []expense.ExpenseDomainEvent
 }
 
 func NewExpenseAggregate(
@@ -56,6 +59,7 @@ func NewExpenseAggregate(
 		deletedAt:    nil,
 		createdAt:    createdAt,
 		updatedAt:    updatedAt,
+		events:       []expense.ExpenseDomainEvent{},
 	}, nil
 }
 
@@ -107,4 +111,24 @@ func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
 	}
 
 	return errors.New("削除対象の支出が見つかりませんでした。")
+}
+
+func (ea *ExpenseAggregate) Add(subscriber events.EventSubscriber) error {
+
+	// ドメインイベント作成
+	event, err := expense.NewExpenseAdded(ea.expenseId)
+	if err != nil {
+		return err
+	}
+	publisher := events.NewEventPublisher()
+
+	// サブスクライバ登録
+	publisher.Subscribe(subscriber)
+
+	// イベント発行
+	domainEventErr := publisher.Publish(event)
+	if domainEventErr != nil {
+		return domainEventErr
+	}
+	return nil
 }

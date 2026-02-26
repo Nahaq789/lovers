@@ -1,6 +1,8 @@
 package events
 
+import "lovers/internal/domain/models/event"
+
 type Event interface {
-	EventId() string
-	OccurredAt() string
+	EventId() event.EventId
+	OccurredAt() event.OccurredAt
 }
