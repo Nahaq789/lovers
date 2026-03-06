@@ -1,6 +1,9 @@
 package eventhandler
 
-import "reflect"
+import (
+	"lovers/internal/domain/events/expense"
+	"reflect"
+)
 
 type ExpenseAddedSubscriber struct {
 }
@@ -10,9 +13,11 @@ func NewExpenseAddedSubscriber() *ExpenseAddedSubscriber {
 }
 
 func (ea *ExpenseAddedSubscriber) EventType() reflect.Type {
-	return nil
+	return reflect.TypeOf(expense.ExpenseAdded{})
 }
 
-func (ea *ExpenseAddedSubscriber) HandleEvent() error {
+func (ea *ExpenseAddedSubscriber) HandleEvent(event expense.ExpenseAdded) error {
+	ここに処理をついかする
+	repositoryもさくせいしてね
 	return nil
 }

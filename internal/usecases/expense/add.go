@@ -32,6 +32,10 @@ func NewExpenseAdd(er repositories.ExpenseRepository, gq query.GroupQueryService
 }
 
 func (ec *ExpenseAdd) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
+	return ec.add(ctx, d)
+}
+
+func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "明細作成処理を開始します。")
 
@@ -98,7 +102,6 @@ func (ec *ExpenseAdd) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDt
 	createdAt := createdat.NewCreatedAt()
 	updatedAt := updatedat.NewUpdatedAt()
 
-	// 集約作成
 	expense, err := expense.NewExpenseAggregate(
 		expenseId, groupId, categoryId, p, nominal, paymentDate, description, createdAt, updatedAt,
 	)
