@@ -25,8 +25,8 @@ func Initialize(d *db.DbClient) *ExpenseSet {
 	expenseRepositoryImpl := ProvideExpenseRepository(d)
 	groupQueryServiceImpl := ProvideGroupQueryService(d)
 	transactionManagerImpl := ProvideTransactionManager(d)
-	expenseCreate := expense.NewExpenseCreate(expenseRepositoryImpl, groupQueryServiceImpl, transactionManagerImpl)
-	expenseController := expense2.NewExpenseController(expenseCreate)
+	expenseAdd := expense.NewExpenseAdd(expenseRepositoryImpl, groupQueryServiceImpl, transactionManagerImpl)
+	expenseController := expense2.NewExpenseController(expenseAdd)
 	expenseSet := &ExpenseSet{
 		ExpenseController: expenseController,
 	}
@@ -62,7 +62,7 @@ var transactionManagerSet = wire.NewSet(
 	ProvideTransactionManager, wire.Bind(new(port2.TransactionManager), new(*port.TransactionManagerImpl)),
 )
 
-var createSet = wire.NewSet(expense.NewExpenseCreate)
+var createSet = wire.NewSet(expense.NewExpenseAdd)
 
 var expenseControllerSet = wire.NewSet(expense2.NewExpenseController)
 

@@ -21,17 +21,17 @@ import (
 	"lovers/internal/usecases/port/query"
 )
 
-type ExpenseCreate struct {
+type ExpenseAdd struct {
 	expenseRepository repositories.ExpenseRepository
 	groupQueryService query.GroupQueryService
 	txManager         port.TransactionManager
 }
 
-func NewExpenseCreate(er repositories.ExpenseRepository, gq query.GroupQueryService, tm port.TransactionManager) *ExpenseCreate {
-	return &ExpenseCreate{expenseRepository: er, groupQueryService: gq, txManager: tm}
+func NewExpenseAdd(er repositories.ExpenseRepository, gq query.GroupQueryService, tm port.TransactionManager) *ExpenseAdd {
+	return &ExpenseAdd{expenseRepository: er, groupQueryService: gq, txManager: tm}
 }
 
-func (ec *ExpenseCreate) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
+func (ec *ExpenseAdd) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "明細作成処理を開始します。")
 

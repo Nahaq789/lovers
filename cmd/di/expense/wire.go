@@ -10,7 +10,7 @@ import (
 	"lovers/internal/infrastructure/services"
 	"lovers/internal/presentation/expense"
 	"lovers/internal/shared/infrastructure/db"
-	expenseCreate "lovers/internal/usecases/expense"
+	expenseAdd "lovers/internal/usecases/expense"
 	"lovers/internal/usecases/port/query"
 
 	"lovers/internal/usecases/port"
@@ -48,7 +48,7 @@ var transactionManagerSet = wire.NewSet(
 	wire.Bind(new(port.TransactionManager), new(*infraPort.TransactionManagerImpl)),
 )
 
-var createSet = wire.NewSet(expenseCreate.NewExpenseCreate)
+var createSet = wire.NewSet(expenseAdd.NewExpenseAdd)
 var expenseControllerSet = wire.NewSet(expense.NewExpenseController)
 
 type ExpenseSet struct {

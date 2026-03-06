@@ -9,10 +9,10 @@ import (
 )
 
 type ExpenseController struct {
-	create *expenseCreate.ExpenseCreate
+	create *expenseCreate.ExpenseAdd
 }
 
-func NewExpenseController(c *expenseCreate.ExpenseCreate) *ExpenseController {
+func NewExpenseController(c *expenseCreate.ExpenseAdd) *ExpenseController {
 	return &ExpenseController{create: c}
 }
 
