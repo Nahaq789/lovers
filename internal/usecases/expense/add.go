@@ -2,6 +2,8 @@ package expense
 
 import (
 	"context"
+	"lovers/internal/domain/events"
+	eventExpense "lovers/internal/domain/events/expense"
 	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/domain/models/category/categoryid"
 	"lovers/internal/domain/models/expense/expenseid"
@@ -17,18 +19,20 @@ import (
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
 	expenseDto "lovers/internal/usecases/dto/expense"
+	eventhandler "lovers/internal/usecases/expense/subscriber"
 	"lovers/internal/usecases/port"
 	"lovers/internal/usecases/port/query"
 )
 
 type ExpenseAdd struct {
-	expenseRepository repositories.ExpenseRepository
-	groupQueryService query.GroupQueryService
-	txManager         port.TransactionManager
+	expenseRepository    repositories.ExpenseRepository
+	expenseLogRepository repositories.ExpenseLogRepository
+	groupQueryService    query.GroupQueryService
+	txManager            port.TransactionManager
 }
 
-func NewExpenseAdd(er repositories.ExpenseRepository, gq query.GroupQueryService, tm port.TransactionManager) *ExpenseAdd {
-	return &ExpenseAdd{expenseRepository: er, groupQueryService: gq, txManager: tm}
+func NewExpenseAdd(er repositories.ExpenseRepository, elr repositories.ExpenseLogRepository, gq query.GroupQueryService, tm port.TransactionManager) *ExpenseAdd {
+	return &ExpenseAdd{expenseRepository: er, expenseLogRepository: elr, groupQueryService: gq, txManager: tm}
 }
 
 func (ec *ExpenseAdd) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
@@ -109,6 +113,19 @@ func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) e
 	if err != nil {
 		l.ErrorContext(ctx, "明細の作成に失敗しました。", "error", err)
 		return err
+	}
+
+	subscriber := eventhandler.NewExpenseAddedSubscriber(ec.expenseLogRepository)
+	publisher := events.NewEventPublisher()
+	publisher.Subscribe(&subscriber)
+
+	event, err := eventExpense.NewExpenseAdded(expenseId)
+	if err != nil {
+		return err
+	}
+	eventErr := publisher.Publish(event)
+	if eventErr != nil {
+		return eventErr
 	}
 
 	l.InfoContext(ctx, "明細作成処理を終了します。")

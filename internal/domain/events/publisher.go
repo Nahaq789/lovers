@@ -21,7 +21,7 @@ func (ep *EventPublisher) Publish(event Event) error {
 		if subscriber.EventType() == reflect.TypeOf(event) {
 			err := subscriber.HandleEvent(event)
 			if err != nil {
-				return  err
+				return err
 			}
 		}
 	}
