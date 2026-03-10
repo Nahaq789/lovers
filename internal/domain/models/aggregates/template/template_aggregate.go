@@ -1,7 +1,7 @@
 package template
 
 import (
-	"errors"
+	"fmt"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/template/expense"
 	"lovers/internal/domain/models/template/expense/expenseid"
@@ -72,7 +72,7 @@ func (ta *TemplateAggregate) GetDetails() []expense.TemplateExpense {
 func (ta *TemplateAggregate) AddDetail(d expense.TemplateExpense) error {
 	for _, exist := range ta.details {
 		if exist.Equal(d.GetTemplateExpenseId()) {
-			return errors.New("同じ支出がすでに存在します。")
+			return fmt.Errorf("template expense %s already exists", d.GetTemplateExpenseId().GetValue())
 		}
 	}
 
@@ -88,5 +88,5 @@ func (ta *TemplateAggregate) RemoveDetail(d expenseid.TemplateExpenseId) error {
 		}
 	}
 
-	return errors.New("削除対象の支出が見つかりませんでした。")
+	return fmt.Errorf("template expense %s not found", d.GetValue())
 }

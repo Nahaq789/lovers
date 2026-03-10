@@ -1,7 +1,7 @@
 package email
 
 import (
-	"errors"
+	"fmt"
 	"regexp"
 )
 
@@ -21,7 +21,7 @@ func validateEmail(v string) error {
 	re := regexp.MustCompile(emailRegex)
 
 	if len(v) <= 254 && !re.MatchString(v) {
-		return errors.New("メールアドレスの形式が正しくないです。")
+		return fmt.Errorf("invalid email format: %s", v)
 	}
 	return nil
 }

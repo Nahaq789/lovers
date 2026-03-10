@@ -1,7 +1,7 @@
 package expense
 
 import (
-	"errors"
+	"fmt"
 	"lovers/internal/domain/events"
 	"lovers/internal/domain/events/expense"
 	"lovers/internal/domain/models/category/categoryid"
@@ -110,7 +110,7 @@ func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
 		return nil
 	}
 
-	return errors.New("削除対象の支出が見つかりませんでした。")
+	return fmt.Errorf("expense %s not found", e.GetValue())
 }
 
 func (ea *ExpenseAggregate) Add(subscriber events.EventSubscriber) error {

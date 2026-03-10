@@ -1,7 +1,7 @@
 package expenses
 
 import (
-	"errors"
+	"fmt"
 	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/domain/models/expense/expenseid"
 )
@@ -44,5 +44,5 @@ func (es *Expenses) RemoveExpense(e expenseid.ExpenseId) error {
 		}
 	}
 
-	return errors.New("削除対象の支出が見つかりませんでした。")
+	return fmt.Errorf("expense %s not found", e.GetValue())
 }

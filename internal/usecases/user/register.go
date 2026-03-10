@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"lovers/internal/domain/models/aggregates/user"
 	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/user/username"
@@ -43,7 +43,7 @@ func (ur *UserRegistration) Execute(ctx context.Context, d *userDto.UserRegistra
 	exist, err := ur.userRepository.Exists(ctx, &userId, &email)
 	if exist || err != nil {
 		if err == nil {
-			return errors.New("ユーザーはすでに登録されています。")
+			return fmt.Errorf("user %s is already registered", userId.GetValue())
 		}
 		l.ErrorContext(ctx, "ユーザー重複の検証に失敗しました。", "error", err)
 		return err
@@ -61,7 +61,7 @@ func (ur *UserRegistration) Execute(ctx context.Context, d *userDto.UserRegistra
 
 	registerErr := ur.userRepository.Register(ctx, *agg)
 	if registerErr != nil {
-		l.ErrorContext(ctx, "データベースの保存に失敗しました。", "error", err)
+		l.ErrorContext(ctx, "データベースの保存に失敗しました。", "error", registerErr)
 		return registerErr
 	}
 

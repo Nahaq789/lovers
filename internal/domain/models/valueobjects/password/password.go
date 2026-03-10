@@ -22,17 +22,17 @@ func (p Password) GetValue() string {
 
 func validatePassword(v string) error {
 	if len(v) < 6 {
-		return errors.New("パスワードは最低6文字必要です")
+		return errors.New("password must be at least 6 characters")
 	}
 
 	matched, _ := regexp.MatchString(`[a-z]`, v)
 	if !matched {
-		return errors.New("パスワードには小文字が必要です")
+		return errors.New("password must contain at least one lowercase letter")
 	}
 
 	matched, _ = regexp.MatchString(`[0-9]`, v)
 	if !matched {
-		return errors.New("パスワードには数字が必要です")
+		return errors.New("password must contain at least one number")
 	}
 
 	return nil

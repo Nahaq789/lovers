@@ -1,7 +1,7 @@
 package group
 
 import (
-	"errors"
+	"fmt"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/group/groupname"
 	"lovers/internal/domain/models/group/member"
@@ -76,7 +76,7 @@ func (ga *GroupAggregate) CreateMember(u userid.UserId) (*member.GroupMember, er
 func (ga *GroupAggregate) AddMember(u userid.UserId) error {
 	for _, exist := range ga.member {
 		if exist.GetUserId().Equal(u) {
-			return errors.New("ユーザーはすでに追加されています。")
+			return fmt.Errorf("user %s is already a member", u.GetValue())
 		}
 	}
 
@@ -96,5 +96,5 @@ func (ga *GroupAggregate) RemoveMember(m member.GroupMember) error {
 			return nil
 		}
 	}
-	return errors.New("削除対象のユーザーが見つかりませんでした。")
+	return fmt.Errorf("member %s not found", m.GetUserId().GetValue())
 }

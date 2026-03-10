@@ -1,7 +1,7 @@
 package amount
 
 import (
-	"errors"
+	"fmt"
 )
 
 type Amount struct {
@@ -21,7 +21,7 @@ func NewAmountZero() Amount {
 
 func validateAmount(v int64) error {
 	if v < 0 {
-		return errors.New("金額は0円以上にしてください。")
+		return fmt.Errorf("amount must be non-negative, got %d", v)
 	}
 	return nil
 }
@@ -44,7 +44,7 @@ func (a Amount) Subtract(v Amount) (Amount, error) {
 	}
 	newValue := a.value - v.GetValue()
 	if err := validateAmount(newValue); err != nil {
-		return Amount{}, errors.New("引き算の結果が負の値になります。")
+		return Amount{}, fmt.Errorf("subtraction result is negative: %d - %d = %d", a.value, v.GetValue(), newValue)
 	}
 	return Amount{value: newValue}, nil
 }
