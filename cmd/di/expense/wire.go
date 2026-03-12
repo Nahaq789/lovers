@@ -23,9 +23,19 @@ func ProvideExpenseRepository(d *db.DbClient) *repositories.ExpenseRepositoryImp
 	return repository
 }
 
+func ProvideExpenseLogRepository(d *db.DbClient) *repositories.ExpenseLogRepositoryImpl {
+	repository := repositories.NewExpenseLogRepository(d)
+	return  repository
+}
+
 var expenseRepositorySet = wire.NewSet(
 	ProvideExpenseRepository,
 	wire.Bind(new(domainRepos.ExpenseRepository), new(*repositories.ExpenseRepositoryImpl)),
+)
+
+var expenseLogRepositorySet = wire.NewSet(
+	ProvideExpenseLogRepository,
+	wire.Bind(new(domainRepos.ExpenseLogRepository), new(*repositories.ExpenseLogRepositoryImpl)),
 )
 
 func ProvideGroupQueryService(d *db.DbClient) *services.GroupQueryServiceImpl {
@@ -58,6 +68,7 @@ type ExpenseSet struct {
 func Initialize(d *db.DbClient) *ExpenseSet {
 	wire.Build(
 		expenseRepositorySet,
+		expenseLogRepositorySet,
 		groupQueryServiceSet,
 		transactionManagerSet,
 		createSet,

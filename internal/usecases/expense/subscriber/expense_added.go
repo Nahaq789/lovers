@@ -24,7 +24,7 @@ func (ea *ExpenseAddedSubscriber) EventType() reflect.Type {
 
 func (ea *ExpenseAddedSubscriber) HandleEvent(event events.Event) error {
 	// 明細追加ドメインイベントにキャストしないといけない
-	e, ok := event.(*expense.ExpenseAdded)
+	_, ok := event.(*expense.ExpenseAdded)
 	if !ok {
 		return fmt.Errorf("unexpected event type: want *expense.ExpenseAdded, got %T", event)
 	}

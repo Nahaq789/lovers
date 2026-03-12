@@ -23,9 +23,10 @@ import (
 
 func Initialize(d *db.DbClient) *ExpenseSet {
 	expenseRepositoryImpl := ProvideExpenseRepository(d)
+	expenseLogRepositoryImpl := ProvideExpenseLogRepository(d)
 	groupQueryServiceImpl := ProvideGroupQueryService(d)
 	transactionManagerImpl := ProvideTransactionManager(d)
-	expenseAdd := expense.NewExpenseAdd(expenseRepositoryImpl, groupQueryServiceImpl, transactionManagerImpl)
+	expenseAdd := expense.NewExpenseAdd(expenseRepositoryImpl, expenseLogRepositoryImpl, groupQueryServiceImpl, transactionManagerImpl)
 	expenseController := expense2.NewExpenseController(expenseAdd)
 	expenseSet := &ExpenseSet{
 		ExpenseController: expenseController,
@@ -40,8 +41,17 @@ func ProvideExpenseRepository(d *db.DbClient) *repositories.ExpenseRepositoryImp
 	return repository
 }
 
+func ProvideExpenseLogRepository(d *db.DbClient) *repositories.ExpenseLogRepositoryImpl {
+	repository := repositories.NewExpenseLogRepository(d)
+	return repository
+}
+
 var expenseRepositorySet = wire.NewSet(
 	ProvideExpenseRepository, wire.Bind(new(repositories2.ExpenseRepository), new(*repositories.ExpenseRepositoryImpl)),
+)
+
+var expenseLogRepositorySet = wire.NewSet(
+	ProvideExpenseLogRepository, wire.Bind(new(repositories2.ExpenseLogRepository), new(*repositories.ExpenseLogRepositoryImpl)),
 )
 
 func ProvideGroupQueryService(d *db.DbClient) *services.GroupQueryServiceImpl {
