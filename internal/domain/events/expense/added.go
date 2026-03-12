@@ -41,3 +41,15 @@ func (a *ExpenseAdded) OccurredAt() event.OccurredAt {
 func (a *ExpenseAdded) ExpenseId() expenseid.ExpenseId {
 	return a.expenseId
 }
+
+func (a *ExpenseAdded) GroupId() groupid.GroupId {
+	return a.groupId
+}
+
+func (a *ExpenseAdded) UserId() userid.UserId {
+	return a.userId
+}
+
+func (a *ExpenseAdded) Operation() string {
+	return a.operation
+}

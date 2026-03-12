@@ -1,8 +1,11 @@
 package events
 
-import "reflect"
+import (
+	"context"
+	"reflect"
+)
 
 type EventSubscriber interface {
 	EventType() reflect.Type
-	HandleEvent(event Event) error
+	HandleEvent(ctx context.Context, event Event) error
 }

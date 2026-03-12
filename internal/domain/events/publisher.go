@@ -1,6 +1,9 @@
 package events
 
-import "reflect"
+import (
+	"context"
+	"reflect"
+)
 
 type EventPublisher struct {
 	subscribers []EventSubscriber
@@ -16,10 +19,10 @@ func (ep *EventPublisher) Subscribe(s EventSubscriber) {
 	ep.subscribers = append(ep.subscribers, s)
 }
 
-func (ep *EventPublisher) Publish(event Event) error {
+func (ep *EventPublisher) Publish(ctx context.Context, event Event) error {
 	for _, subscriber := range ep.subscribers {
 		if subscriber.EventType() == reflect.TypeOf(event) {
-			err := subscriber.HandleEvent(event)
+			err := subscriber.HandleEvent(ctx, event)
 			if err != nil {
 				return err
 			}

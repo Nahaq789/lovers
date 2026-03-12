@@ -2,8 +2,6 @@ package expense
 
 import (
 	"context"
-	"lovers/internal/domain/events"
-	eventExpense "lovers/internal/domain/events/expense"
 	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/domain/models/category/categoryid"
 	"lovers/internal/domain/models/expense/expenseid"
@@ -116,16 +114,9 @@ func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) e
 	}
 
 	subscriber := eventhandler.NewExpenseAddedSubscriber(ec.expenseLogRepository)
-	publisher := events.NewEventPublisher()
-	publisher.Subscribe(&subscriber)
-
-	event, err := eventExpense.NewExpenseAdded(expenseId)
+	err = expense.Add(ctx, &subscriber)
 	if err != nil {
 		return err
-	}
-	eventErr := publisher.Publish(event)
-	if eventErr != nil {
-		return eventErr
 	}
 
 	l.InfoContext(ctx, "明細作成処理を終了します。")

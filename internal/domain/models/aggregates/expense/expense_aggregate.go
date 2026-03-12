@@ -1,6 +1,7 @@
 package expense
 
 import (
+	"context"
 	"fmt"
 	"lovers/internal/domain/events"
 	"lovers/internal/domain/events/expense"
@@ -113,7 +114,7 @@ func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
 	return fmt.Errorf("expense %s not found", e.GetValue())
 }
 
-func (ea *ExpenseAggregate) Add(subscriber events.EventSubscriber) error {
+func (ea *ExpenseAggregate) Add(ctx context.Context, subscriber events.EventSubscriber) error {
 
 	// ドメインイベント作成
 	event, err := expense.NewExpenseAdded(ea.expenseId)
@@ -126,7 +127,7 @@ func (ea *ExpenseAggregate) Add(subscriber events.EventSubscriber) error {
 	publisher.Subscribe(subscriber)
 
 	// イベント発行
-	domainEventErr := publisher.Publish(event)
+	domainEventErr := publisher.Publish(ctx, event)
 	if domainEventErr != nil {
 		return domainEventErr
 	}
