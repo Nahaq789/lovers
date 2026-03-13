@@ -16,7 +16,7 @@ func NewExpenseController(c *expenseCreate.ExpenseAdd) *ExpenseController {
 	return &ExpenseController{create: c}
 }
 
-func (e *ExpenseController) Create(ctx *gin.Context) {
+func (e *ExpenseController) Add(ctx *gin.Context) {
 	var expenseDto expense.ExpenseCreateDto
 	if err := ctx.ShouldBind(&expenseDto); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{

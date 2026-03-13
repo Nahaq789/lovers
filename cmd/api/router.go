@@ -70,6 +70,6 @@ func ExpenseRouter(r gin.IRouter, expenseSet expense.ExpenseSet) {
 	v1.Use(middleware.AuthMiddleware())
 
 	{
-		v1.POST("/expense/create", expenseSet.ExpenseController.Create)
+		v1.POST("/expense/add", expenseSet.ExpenseController.Add)
 	}
 }
