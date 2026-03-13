@@ -9,6 +9,7 @@ import (
 	"lovers/internal/domain/models/expense/expenseid"
 	paymentdetail "lovers/internal/domain/models/expense/paymentuser"
 	"lovers/internal/domain/models/group/groupid"
+	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/valueobjects/amount"
 	"lovers/internal/domain/models/valueobjects/createdat"
 	"lovers/internal/domain/models/valueobjects/deletedat"
@@ -114,10 +115,10 @@ func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
 	return fmt.Errorf("expense %s not found", e.GetValue())
 }
 
-func (ea *ExpenseAggregate) Add(ctx context.Context, subscriber events.EventSubscriber) error {
+func (ea *ExpenseAggregate) PublishExpenseAdded(ctx context.Context, subscriber events.EventSubscriber, userId userid.UserId) error {
 
 	// ドメインイベント作成
-	event, err := expense.NewExpenseAdded(ea.expenseId)
+	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, "add")
 	if err != nil {
 		return err
 	}

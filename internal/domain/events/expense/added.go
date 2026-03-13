@@ -16,7 +16,12 @@ type ExpenseAdded struct {
 	operation  string
 }
 
-func NewExpenseAdded(expenseId expenseid.ExpenseId) (*ExpenseAdded, error) {
+func NewExpenseAdded(
+	expenseId expenseid.ExpenseId,
+	groupId groupid.GroupId,
+	userId userid.UserId,
+	operation string,
+) (*ExpenseAdded, error) {
 	id, err := event.NewEventId()
 	if err != nil {
 		return nil, err
@@ -27,6 +32,9 @@ func NewExpenseAdded(expenseId expenseid.ExpenseId) (*ExpenseAdded, error) {
 		eventId:    id,
 		occurredAt: occ,
 		expenseId:  expenseId,
+		groupId:    groupId,
+		userId:     userId,
+		operation:  operation,
 	}, nil
 }
 

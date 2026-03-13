@@ -16,6 +16,7 @@ import (
 	"lovers/internal/domain/models/valueobjects/updatedat"
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
+	ctxUserId "lovers/internal/shared/infrastructure/security/userid"
 	expenseDto "lovers/internal/usecases/dto/expense"
 	eventhandler "lovers/internal/usecases/expense/subscriber"
 	"lovers/internal/usecases/port"
@@ -109,13 +110,19 @@ func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) e
 	)
 	err = ec.expenseRepository.Add(ctx, expense)
 	if err != nil {
-		l.ErrorContext(ctx, "明細の作成に失敗しました。", "error", err)
+		l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
 		return err
 	}
 
 	subscriber := eventhandler.NewExpenseAddedSubscriber(ec.expenseLogRepository)
-	err = expense.Add(ctx, &subscriber)
+	userId, err := userid.NewUserIdFromString(ctxUserId.FromContext(ctx))
 	if err != nil {
+		l.ErrorContext(ctx, "ユーザIDの生成に失敗しました。", "error", err)
+		return err
+	}
+	err = expense.PublishExpenseAdded(ctx, &subscriber, userId)
+	if err != nil {
+		l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
 		return err
 	}
 
