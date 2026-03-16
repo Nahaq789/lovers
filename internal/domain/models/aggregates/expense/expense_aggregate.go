@@ -118,7 +118,8 @@ func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
 func (ea *ExpenseAggregate) PublishExpenseAdded(ctx context.Context, subscriber events.EventSubscriber, userId userid.UserId) error {
 
 	// ドメインイベント作成
-	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, "add")
+	afterData := 
+	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, "add", nil)
 	if err != nil {
 		return err
 	}

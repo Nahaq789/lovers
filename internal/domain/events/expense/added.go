@@ -2,6 +2,8 @@ package expense
 
 import (
 	"lovers/internal/domain/models/event"
+	"lovers/internal/domain/models/expense/afterdata"
+	"lovers/internal/domain/models/expense/beforedata"
 	"lovers/internal/domain/models/expense/expenseid"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/user/userid"
@@ -14,6 +16,8 @@ type ExpenseAdded struct {
 	groupId    groupid.GroupId
 	userId     userid.UserId
 	operation  string
+	beforeData *beforedata.BeforeData
+	afterData  *afterdata.AfterData
 }
 
 func NewExpenseAdded(
@@ -21,6 +25,7 @@ func NewExpenseAdded(
 	groupId groupid.GroupId,
 	userId userid.UserId,
 	operation string,
+	afterdata *afterdata.AfterData,
 ) (*ExpenseAdded, error) {
 	id, err := event.NewEventId()
 	if err != nil {
@@ -35,6 +40,8 @@ func NewExpenseAdded(
 		groupId:    groupId,
 		userId:     userId,
 		operation:  operation,
+		beforeData: nil,
+		afterData:  afterdata,
 	}, nil
 }
 
@@ -60,4 +67,12 @@ func (a *ExpenseAdded) UserId() userid.UserId {
 
 func (a *ExpenseAdded) Operation() string {
 	return a.operation
+}
+
+func (a *ExpenseAdded) BeforeData() *beforedata.BeforeData {
+	return a.beforeData
+}
+
+func (a *ExpenseAdded) AfterData() *afterdata.AfterData {
+	return a.afterData
 }
