@@ -6,6 +6,7 @@ import (
 	"lovers/internal/domain/events"
 	"lovers/internal/domain/events/expense"
 	"lovers/internal/domain/models/category/categoryid"
+	"lovers/internal/domain/models/expense/afterdata"
 	"lovers/internal/domain/models/expense/expenseid"
 	paymentdetail "lovers/internal/domain/models/expense/paymentuser"
 	"lovers/internal/domain/models/group/groupid"
@@ -118,8 +119,13 @@ func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
 func (ea *ExpenseAggregate) PublishExpenseAdded(ctx context.Context, subscriber events.EventSubscriber, userId userid.UserId) error {
 
 	// ドメインイベント作成
-	afterData := 
-	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, "add", nil)
+	afterDataList := make([]afterdata.AfterData, 0)
+	for _, payment := range ea.paymentUsers.GetPaymentUsers() {
+		a := payment.GetAmount()
+		afterData := afterdata.NewAfterData(payment.GetUserId(), ea.nominal, a)
+		afterDataList = append(afterDataList, *afterData)
+	}
+	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, "add", afterDataList)
 	if err != nil {
 		return err
 	}
