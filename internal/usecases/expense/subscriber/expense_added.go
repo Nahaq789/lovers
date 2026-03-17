@@ -35,16 +35,18 @@ func (ea *ExpenseAddedSubscriber) HandleEvent(ctx context.Context, event events.
 		return fmt.Errorf("unexpected event type: want *expense.ExpenseAdded, got %T", event)
 	}
 
-	logId, err := expenselogid.NewExpenseLogId()
-	if err != nil {
-		return err
-	}
-
 	createdAt := createdat.NewCreatedAt()
 
-	added := log.NewExpenseLog(logId, e.ExpenseId(), e.GroupId(), e.UserId(), e.Operation(), "", "", createdAt)
-
-	dbErr := ea.repository.Add(ctx, added)
+	addedList := make([]*log.ExpenseLog, 0)
+	for _, afterData := range e.AfterDataList() {
+		logId, err := expenselogid.NewExpenseLogId()
+		if err != nil {
+			return err
+		}
+		added := log.NewExpenseLog(logId, e.ExpenseId(), e.GroupId(), e.UserId(), e.Operation(), nil, &afterData, createdAt)
+		addedList = append(addedList, added)
+	}
+	dbErr := ea.repository.Add(ctx, addedList)
 	if dbErr != nil {
 		return dbErr
 	}

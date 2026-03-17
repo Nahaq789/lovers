@@ -4,6 +4,7 @@ import (
 	"lovers/internal/domain/models/event"
 	"lovers/internal/domain/models/expense/afterdata"
 	"lovers/internal/domain/models/expense/expenseid"
+	"lovers/internal/domain/models/expense/operation"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/user/userid"
 )
@@ -14,7 +15,7 @@ type ExpenseAdded struct {
 	expenseId     expenseid.ExpenseId
 	groupId       groupid.GroupId
 	userId        userid.UserId
-	operation     string
+	operation     operation.Operation
 	afterDataList []afterdata.AfterData
 }
 
@@ -22,7 +23,6 @@ func NewExpenseAdded(
 	expenseId expenseid.ExpenseId,
 	groupId groupid.GroupId,
 	userId userid.UserId,
-	operation string,
 	afterdata []afterdata.AfterData,
 ) (*ExpenseAdded, error) {
 	id, err := event.NewEventId()
@@ -37,7 +37,7 @@ func NewExpenseAdded(
 		expenseId:     expenseId,
 		groupId:       groupId,
 		userId:        userId,
-		operation:     operation,
+		operation:     operation.Add,
 		afterDataList: afterdata,
 	}, nil
 }
@@ -62,7 +62,7 @@ func (a *ExpenseAdded) UserId() userid.UserId {
 	return a.userId
 }
 
-func (a *ExpenseAdded) Operation() string {
+func (a *ExpenseAdded) Operation() operation.Operation {
 	return a.operation
 }
 

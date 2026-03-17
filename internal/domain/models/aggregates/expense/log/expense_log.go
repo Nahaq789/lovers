@@ -1,8 +1,11 @@
 package log
 
 import (
+	"lovers/internal/domain/models/expense/afterdata"
+	"lovers/internal/domain/models/expense/beforedata"
 	"lovers/internal/domain/models/expense/expenseid"
 	"lovers/internal/domain/models/expense/expenselogid"
+	"lovers/internal/domain/models/expense/operation"
 	"lovers/internal/domain/models/group/groupid"
 	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/valueobjects/createdat"
@@ -13,9 +16,9 @@ type ExpenseLog struct {
 	expenseId    expenseid.ExpenseId
 	groupId      groupid.GroupId
 	userId       userid.UserId
-	operation    string
-	beforeData   string
-	afterData    string
+	operation    operation.Operation
+	beforeData   *beforedata.BeforeData
+	afterData    *afterdata.AfterData
 	createdAt    createdat.CreatedAt
 }
 
@@ -24,9 +27,9 @@ func NewExpenseLog(
 	expenseId expenseid.ExpenseId,
 	groupId groupid.GroupId,
 	userId userid.UserId,
-	operation string,
-	beforeData string,
-	afterData string,
+	operation operation.Operation,
+	beforeData *beforedata.BeforeData,
+	afterData *afterdata.AfterData,
 	createdAt createdat.CreatedAt,
 ) *ExpenseLog {
 	return &ExpenseLog{
@@ -57,15 +60,15 @@ func (el *ExpenseLog) GetUserId() userid.UserId {
 	return el.userId
 }
 
-func (el *ExpenseLog) GetOperation() string {
+func (el *ExpenseLog) GetOperation() operation.Operation {
 	return el.operation
 }
 
-func (el *ExpenseLog) GetBeforeData() string {
+func (el *ExpenseLog) GetBeforeData() *beforedata.BeforeData {
 	return el.beforeData
 }
 
-func (el *ExpenseLog) GetAfterData() string {
+func (el *ExpenseLog) GetAfterData() *afterdata.AfterData {
 	return el.afterData
 }
 

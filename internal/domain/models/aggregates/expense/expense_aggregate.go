@@ -125,7 +125,7 @@ func (ea *ExpenseAggregate) PublishExpenseAdded(ctx context.Context, subscriber 
 		afterData := afterdata.NewAfterData(payment.GetUserId(), ea.nominal, a)
 		afterDataList = append(afterDataList, *afterData)
 	}
-	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, "add", afterDataList)
+	event, err := expense.NewExpenseAdded(ea.expenseId, ea.groupId, userId, afterDataList)
 	if err != nil {
 		return err
 	}

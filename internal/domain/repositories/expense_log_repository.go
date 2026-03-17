@@ -6,5 +6,5 @@ import (
 )
 
 type ExpenseLogRepository interface {
-	Add(ctx context.Context, e *log.ExpenseLog) error
+	Add(ctx context.Context, e []*log.ExpenseLog) error
 }

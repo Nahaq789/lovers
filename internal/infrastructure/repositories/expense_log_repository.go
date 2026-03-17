@@ -16,6 +16,6 @@ func NewExpenseLogRepository(d *db.DbClient) *ExpenseLogRepositoryImpl {
 	}
 }
 
-func (elr *ExpenseLogRepositoryImpl) Add(ctx context.Context, e *log.ExpenseLog) error {
+func (elr *ExpenseLogRepositoryImpl) Add(ctx context.Context, e []*log.ExpenseLog) error {
 	return nil
 }
