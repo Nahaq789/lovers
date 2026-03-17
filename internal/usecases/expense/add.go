@@ -108,24 +108,30 @@ func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) e
 	expense, err := expense.NewExpenseAggregate(
 		expenseId, groupId, categoryId, p, nominal, paymentDate, description, createdAt, updatedAt,
 	)
-	err = ec.expenseRepository.Add(ctx, expense)
 	if err != nil {
-		l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
+		l.ErrorContext(ctx, "明細の生成に失敗しました。", "error", err)
 		return err
 	}
 
-	subscriber := eventhandler.NewExpenseAddedSubscriber(ec.expenseLogRepository)
-	userId, err := userid.NewUserIdFromString(ctxUserId.FromContext(ctx))
-	if err != nil {
-		l.ErrorContext(ctx, "ユーザIDの生成に失敗しました。", "error", err)
-		return err
-	}
-	err = expense.PublishExpenseAdded(ctx, &subscriber, userId)
-	if err != nil {
-		l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
-		return err
-	}
+	return ec.txManager.WithTransaction(ctx, func(txCtx context.Context) error {
+		err := ec.expenseRepository.Add(txCtx, expense)
+		if err != nil {
+			l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
+			return err
+		}
+		subscriber := eventhandler.NewExpenseAddedSubscriber(ec.expenseLogRepository)
+		userId, err := userid.NewUserIdFromString(ctxUserId.FromContext(ctx))
+		if err != nil {
+			l.ErrorContext(ctx, "ユーザIDの生成に失敗しました。", "error", err)
+			return err
+		}
+		err = expense.PublishExpenseAdded(txCtx, &subscriber, userId)
+		if err != nil {
+			l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
+			return err
+		}
 
-	l.InfoContext(ctx, "明細作成処理を終了します。")
-	return nil
+		l.InfoContext(ctx, "明細作成処理を終了します。")
+		return nil
+	})
 }

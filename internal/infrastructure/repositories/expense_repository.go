@@ -6,6 +6,7 @@ import (
 	"lovers/internal/domain/models/aggregates/expense"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/shared/infrastructure/logger"
+	"lovers/internal/shared/infrastructure/transaction"
 	"strings"
 )
 
@@ -19,14 +20,7 @@ func NewExpenseRepository(d *db.DbClient) *ExpenseRepositoryImpl {
 
 func (e *ExpenseRepositoryImpl) Add(ctx context.Context, expense *expense.ExpenseAggregate) error {
 	l := logger.FromContext(ctx)
-	c := e.db.GetClient()
-
-	tx, txErr := c.BeginTx(ctx, nil)
-	if txErr != nil {
-		l.ErrorContext(ctx, "failed begin transaction", "error", txErr)
-		return txErr
-	}
-	defer tx.Rollback()
+	tx := transaction.FromContext(ctx)
 
 	paymentUsers := expense.GetPaymentUsers()
 	s := make([]any, 0, len(paymentUsers.GetPaymentUsers())*10)
@@ -54,5 +48,5 @@ func (e *ExpenseRepositoryImpl) Add(ctx context.Context, expense *expense.Expens
 		return err
 	}
 
-	return tx.Commit()
+	return nil
 }

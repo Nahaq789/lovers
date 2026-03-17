@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"lovers/internal/domain/entity"
 	"lovers/internal/domain/models/aggregates/user"
 	userid "lovers/internal/domain/models/user/userid"
 	"lovers/internal/domain/models/valueobjects/email"
@@ -35,7 +34,7 @@ func (u *UserRepositoryImpl) Register(ctx context.Context, user user.UserAggrega
 	return nil
 }
 
-func (u *UserRepositoryImpl) GetUser(ctx context.Context, userId userid.UserId) (*entity.UserEntity, error) {
+func (u *UserRepositoryImpl) GetUser(ctx context.Context, userId userid.UserId) (*user.UserAggregate, error) {
 	return nil, nil
 }
 
