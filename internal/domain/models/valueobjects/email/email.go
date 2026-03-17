@@ -1,0 +1,31 @@
+package email
+
+import (
+	"fmt"
+	"regexp"
+)
+
+type Email struct {
+	value string
+}
+
+func NewEmail(v string) (Email, error) {
+	if err := validateEmail(v); err != nil {
+		return Email{}, err
+	}
+	return Email{value: v}, nil
+}
+
+func validateEmail(v string) error {
+	emailRegex := `^[a-zA-Z0-9!#$%&'*+/=?^_` + "`" + `{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_` + "`" + `{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+$`
+	re := regexp.MustCompile(emailRegex)
+
+	if len(v) <= 254 && !re.MatchString(v) {
+		return fmt.Errorf("invalid email format: %s", v)
+	}
+	return nil
+}
+
+func (e Email) GetValue() string {
+	return e.value
+}

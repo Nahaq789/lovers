@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"lovers/internal/shared/infrastructure/tracing/key"
+	"os"
 )
 
 type ContextHandler struct {
@@ -38,4 +39,30 @@ func (h *ContextHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 
 func (h *ContextHandler) WithGroup(name string) slog.Handler {
 	return NewContextHandler(h.handler.WithGroup(name))
+}
+
+type contextKey struct{}
+
+func WithContext(ctx context.Context, l *slog.Logger) context.Context {
+	return context.WithValue(ctx, contextKey{}, l)
+}
+
+func FromContext(ctx context.Context) *slog.Logger {
+	l, ok := ctx.Value(contextKey{}).(*slog.Logger)
+	if !ok {
+		l = InitLogger()
+	}
+
+	return l
+}
+
+func InitLogger() *slog.Logger {
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+	contextHandler := NewContextHandler(handler)
+	logger := slog.New(contextHandler)
+	slog.SetDefault(logger)
+
+	return logger
 }
