@@ -5,21 +5,20 @@ package aws
 
 import (
 	"context"
-	"log/slog"
-	"lovers/internal/shared/infrastructure/aws"
+	"lovers/internal/shared/infrastructure/sharedaws"
 
 	"github.com/google/wire"
 )
 
-var cognitoSet = wire.NewSet(aws.InitCognitoClient)
-var parameterStoreSet = wire.NewSet(aws.InitParameterStoreClient)
+var cognitoSet = wire.NewSet(sharedaws.InitCognitoClient)
+var parameterStoreSet = wire.NewSet(sharedaws.InitParameterStoreClient)
 
 type AwsSet struct {
-	Cognito        *aws.CognitoClient
-	ParameterStore *aws.ParameterStoreClient
+	Cognito        *sharedaws.CognitoClient
+	ParameterStore *sharedaws.ParameterStoreClient
 }
 
-func Initialize(ctx context.Context, logger *slog.Logger) (*AwsSet, error) {
+func Initialize(ctx context.Context) (*AwsSet, error) {
 	wire.Build(cognitoSet, parameterStoreSet, wire.Struct(new(AwsSet), "*"))
 	return nil, nil
 }

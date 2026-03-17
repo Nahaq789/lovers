@@ -43,8 +43,6 @@ module "cognito" {
     require_uppercase = false  # 開発用に大文字不要
   }
 
-  mfa_configuration = "OFF"  # 開発環境ではMFA無効
-
   admin_create_user_only = false  # 開発者が自由にユーザー作成可能
 
   token_validity = {
@@ -52,16 +50,6 @@ module "cognito" {
     id_token     = 24   # 開発用に長め
     refresh_token = 30
   }
-
-  callback_urls = [
-    "http://localhost:3000/callback",
-    "https://dev-${var.project_name}.example.com/callback"
-  ]
-
-  logout_urls = [
-    "http://localhost:3000/logout",
-    "https://dev-${var.project_name}.example.com/logout"
-  ]
 
   allow_unauthenticated_identities = true  # 開発用にゲストアクセス許可
 
