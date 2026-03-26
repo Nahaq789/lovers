@@ -1,7 +1,3 @@
-
-
----
-
 ## システム設計の最終まとめ
 
 ### アーキテクチャ
@@ -37,24 +33,55 @@ ALTER TABLE "user" ENABLE ROW LEVEL SECURITY;
 
 ### セキュリティ設計
 
-1. **認証**: Cognito JWT
+1. **認証**: Cognito JWT（`ADMIN_USER_PASSWORD_AUTH` フロー）
 2. **認可**: Lambda内でJWT検証 + 本人確認（JWT内subとリクエストパラメータを照合）
 3. **多層防御**: RLS（1層目）+ Lambda認証（2層目）
+
+**JWT検証:**
+- CognitoのJWKSエンドポイントから公開鍵を取得しキャッシュ
+- Lambdaローカルで検証（Cognitoへの問い合わせなし）
+
+**トークン管理:**
+- AccessToken / RefreshToken はいずれも HttpOnly Cookie で管理
+- リフレッシュは401レスポンスをトリガーにフロントが自動実行し、成功後に元のリクエストをリトライ
+- ログアウトは `RevokeToken`（当該デバイスのみ無効化）
 
 ---
 
 ### エンドポイント一覧
 
-| エンドポイント | 認証 | 説明 |
-|-------------|------|------|
-| POST /signup | 不要 | サインアップ（Cognito登録のみ） |
-| POST /confirm-email | 不要 | メール認証 + 自動ログイン |
-| POST /complete-profile | 必須 | プロフィール登録（userテーブル登録） |
-| POST /login | 不要 | ログイン |
-| POST /refresh-token | 不要 | トークン更新 |
-| POST /forgot-password | 不要 | パスワードリセット開始 |
-| POST /confirm-forgot-password | 不要 | パスワードリセット確認 |
-| DELETE /users/me | 必須 | アカウント削除 |
+| エンドポイント | 認証 | Cognito API | 説明 |
+|-------------|------|------------|------|
+| POST /signup | 不要 | SignUp | サインアップ（Cognito登録のみ） |
+| POST /confirm-email | 不要 | ConfirmSignUp + AdminInitiateAuth | メール認証 + 自動ログイン |
+| POST /complete-profile | 必須 | - | プロフィール登録（userテーブル登録） |
+| POST /login | 不要 | AdminInitiateAuth | ログイン |
+| POST /refresh-token | 不要 | AdminInitiateAuth (REFRESH_TOKEN_AUTH) | トークン更新 |
+| POST /logout | 必須 | RevokeToken | ログアウト（当該デバイスのみ） |
+| POST /forgot-password | 不要 | ForgotPassword | パスワードリセット開始 |
+| POST /confirm-forgot-password | 不要 | ConfirmForgotPassword | パスワードリセット確認 |
+| DELETE /users/me | 必須 | AdminDeleteUser | アカウント削除 |
+
+---
+
+### 認証フロー
+
+#### ログイン
+1. `POST /login { email, password }`
+2. Go → Cognito `AdminInitiateAuth`
+3. AccessToken / RefreshToken を HttpOnly Cookie にセット
+
+#### APIリクエスト
+1. Cookie の AccessToken をGoがJWKS公開鍵でローカル検証
+2. 期限切れの場合 → 401を返す
+3. フロントが `POST /refresh-token` を自動実行 → AccessToken を更新
+4. 元のリクエストをリトライ
+
+#### ログアウト
+1. `POST /logout`
+2. Go → Cognito `RevokeToken`（RefreshToken を無効化）
+3. Cookie（AccessToken / RefreshToken）をクリア
+4. ※発行済みAccessTokenはJWTの有効期限まで技術的には有効（許容リスク）
 
 ---
 
@@ -70,8 +97,8 @@ POST /signup
 【ステップ2: メール認証】
 POST /confirm-email
 ・Cognito認証確認
-・自動ログイン
-・JWTトークン返却
+・自動ログイン（AdminInitiateAuth）
+・AccessToken / RefreshToken を Cookie にセット
 
 【ステップ3: プロフィール登録】
 POST /complete-profile (JWT必須)
@@ -95,7 +122,7 @@ POST /complete-profile (JWT必須)
 - email重複 → "メールアドレス使用済み"エラー + 管理者通知
 - DB登録失敗 → userテーブル削除 → Cognito削除
 
-**ユーザー削除（パターンB）:**
+**ユーザー削除:**
 - ① userテーブル削除
 - ② Cognito削除
 - ②失敗時の復元: 後で検討
@@ -110,4 +137,114 @@ POST /complete-profile (JWT必須)
 - [ ] メール認証タイムアウト対応
 - [ ] ユーザー削除失敗時の復元処理
 
+
+# 認証フロー図
+
+## ログイン
+
+```
+[Browser]                    [Go/Gin]                        [Cognito]
+   |                             |                               |
+   | POST /login                 |                               |
+   | { email, password }         |                               |
+   |---------------------------->|                               |
+   |                             | AdminInitiateAuth             |
+   |                             | { email, password }           |
+   |                             |------------------------------>|
+   |                             |                               |
+   |                             |   { AccessToken,              |
+   |                             |     IdToken,                  |
+   |                             |     RefreshToken }            |
+   |                             |<------------------------------|
+   |                             |                               |
+   | Set-Cookie:                 |                               |
+   | access_token (HttpOnly)     |                               |
+   | refresh_token (HttpOnly)    |                               |
+   |<----------------------------|                               |
+```
+
 ---
+
+## APIリクエスト（認証済み）
+
+```
+[Browser]                    [Go/Gin]                        [Cognito]
+   |                             |                               |
+   | GET /expenses               |                               |
+   | Cookie: access_token        |                               |
+   |---------------------------->|                               |
+   |                             | Verify JWT                    |
+   |                             | (local, cached JWKS)          |
+   |                             |                               |
+   | 200 OK                      |                               |
+   |<----------------------------|                               |
+```
+
+> AccessTokenの検証はCognitoへの問い合わせなし。JWKSエンドポイントから取得した公開鍵をキャッシュしてローカルで完結させる。
+
+---
+
+## トークンリフレッシュ（401トリガー）
+
+```
+[Browser]                    [Go/Gin]                        [Cognito]
+   |                             |                               |
+   | GET /expenses               |                               |
+   | Cookie: access_token(exp.)  |                               |
+   |---------------------------->|                               |
+   |                             | JWT expired                   |
+   |                             |                               |
+   | 401 Unauthorized            |                               |
+   |<----------------------------|                               |
+   |                             |                               |
+   | POST /auth/refresh          |                               |
+   | Cookie: refresh_token       |                               |
+   |---------------------------->|                               |
+   |                             | AdminInitiateAuth             |
+   |                             | REFRESH_TOKEN_AUTH            |
+   |                             |------------------------------>|
+   |                             |   { AccessToken, IdToken }    |
+   |                             |<------------------------------|
+   |                             |                               |
+   | Set-Cookie:                 |                               |
+   | access_token (HttpOnly)     |                               |
+   |<----------------------------|                               |
+   |                             |                               |
+   | GET /expenses (retry)       |                               |
+   | Cookie: access_token (new)  |                               |
+   |---------------------------->|                               |
+   | 200 OK                      |                               |
+   |<----------------------------|                               |
+```
+
+---
+
+## ログアウト（当該デバイスのみ）
+
+```
+[Browser]                    [Go/Gin]                        [Cognito]
+   |                             |                               |
+   | POST /auth/logout           |                               |
+   | Cookie: refresh_token       |                               |
+   |---------------------------->|                               |
+   |                             | RevokeToken                   |
+   |                             | { refresh_token }             |
+   |                             |------------------------------>|
+   |                             |   200 OK                      |
+   |                             |<------------------------------|
+   |                             |                               |
+   | Clear cookies               |                               |
+   |<----------------------------|                               |
+```
+
+> `RevokeToken` はRefreshTokenを無効化する。ただし発行済みのAccessTokenはJWTの有効期限まで技術的には使用可能（許容リスク）。
+
+---
+
+## エンドポイント一覧
+
+| エンドポイント | Cognito API | Cookie操作 |
+|---|---|---|
+| `POST /login` | `AdminInitiateAuth` | access_token, refresh_token をセット |
+| `POST /auth/refresh` | `AdminInitiateAuth` (REFRESH_TOKEN_AUTH) | access_token を更新 |
+| `POST /auth/logout` | `RevokeToken` | access_token, refresh_token をクリア |
