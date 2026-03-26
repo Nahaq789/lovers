@@ -59,11 +59,14 @@
 ### 3.2 ユーザー認証
 - **認証方式**
   - メールアドレス + パスワード
-  - SRP_A（Secure Remote Password）プロトコルを採用
-  
+  - `ADMIN_USER_PASSWORD_AUTH` フロー（Go/Lambda経由でCognitoを呼び出す）
+
 - **認証基盤**
   - AWS Cognito（認証・認可サーバー）
-  - ログイン後、JWTトークンを取得して API へのアクセス認証に使用
+  - ログイン後、AccessToken / RefreshToken を HttpOnly Cookie で管理
+  - JWT検証はCognitoのJWKS公開鍵をキャッシュしてLambdaローカルで実施
+  - トークンリフレッシュは401レスポンスをトリガーにフロントが自動実行
+  - ログアウトは `RevokeToken` により当該デバイスのみ無効化
 
 ---
 
