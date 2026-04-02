@@ -2,12 +2,18 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"lovers/internal/domain/models/aggregates/expense"
+	"lovers/internal/domain/models/expense/expenseid"
+	"lovers/internal/domain/models/user/userid"
 	"lovers/internal/shared/infrastructure/db"
 	"lovers/internal/shared/infrastructure/logger"
 	"lovers/internal/shared/infrastructure/transaction"
 	"strings"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type ExpenseRepositoryImpl struct {
@@ -49,4 +55,65 @@ func (e *ExpenseRepositoryImpl) Add(ctx context.Context, expense *expense.Expens
 	}
 
 	return nil
+}
+
+func (e *ExpenseRepositoryImpl) FindById(ctx context.Context, expenseId expenseid.ExpenseId, userId userid.UserId) (*expense.ExpenseAggregate, error) {
+	l := logger.FromContext(ctx)
+	query := `
+		SELECT
+    		expense_id,
+    		user_id,
+    		group_id,
+    		category_id,
+    		amount,
+    		nominal,
+    		payment_date,
+    		description,
+    		deleted_at,
+    		created_at,
+    		updated_at
+		FROM 
+			expense
+		WHERE 
+			expense_id = $1
+			AND user_id = $2`
+
+	var (
+		rawExpenseId   uuid.UUID
+		rawUserId      uuid.UUID
+		rawGroupId     uuid.UUID
+		rawCategoryId  uuid.UUID
+		rawAmount      int64
+		rawNominal     string
+		rawPaymentDate time.Time
+		rawDescription sql.NullString
+		rawDeletedAt   sql.NullTime
+		rawCreatedAt   time.Time
+		rawUpdatedAt   time.Time
+	)
+
+	c := e.db.GetClient()
+	err := c.QueryRowContext(ctx, query, expenseId.GetValue(), userId.GetValue()).Scan(
+		&rawExpenseId,
+		&rawUserId,
+		&rawGroupId,
+		&rawCategoryId,
+		&rawAmount,
+		&rawNominal,
+		&rawPaymentDate,
+		&rawDescription,
+		&rawDeletedAt,
+		&rawCreatedAt,
+		&rawUpdatedAt,
+	)
+	if err == sql.ErrNoRows {
+		l.ErrorContext(ctx, "expense not found", "error", err)
+		return nil, nil
+	}
+
+	if err != nil {
+		l.ErrorContext(ctx, "failed to find expense", "error", err)
+		return nil, err
+	}
+	return nil, nil
 }
