@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
-	"lovers/internal/domain/models/aggregates/auth"
+	authaggregate "lovers/internal/domain/models/aggregates/auth"
 	"lovers/internal/domain/models/valueobjects/email"
 	"lovers/internal/domain/models/valueobjects/password"
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
-	"lovers/internal/usecases/dto/auth"
+	"lovers/internal/usecases/dto/auth/request"
 )
 
 type SignUp struct {
@@ -20,7 +20,7 @@ func NewSignUp(a repositories.AuthRepository) *SignUp {
 	}
 }
 
-func (s *SignUp) Execute(ctx context.Context, c *auth.SignUpDto) error {
+func (s *SignUp) Execute(ctx context.Context, c *request.SignUpDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "SignUp処理を開始します。")
 	email, err := email.NewEmail(c.Email)
