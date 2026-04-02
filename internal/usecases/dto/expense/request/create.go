@@ -1,4 +1,4 @@
-package expense
+package request
 
 type ExpenseCreateDto struct {
 	GroupId        string          `json:"group_id"`

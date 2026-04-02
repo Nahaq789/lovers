@@ -1,7 +1,7 @@
 package expense
 
 import (
-	"lovers/internal/usecases/dto/expense"
+	"lovers/internal/usecases/dto/expense/request"
 	expenseCreate "lovers/internal/usecases/expense"
 	"net/http"
 
@@ -17,7 +17,7 @@ func NewExpenseController(c *expenseCreate.ExpenseAdd) *ExpenseController {
 }
 
 func (e *ExpenseController) Add(ctx *gin.Context) {
-	var expenseDto expense.ExpenseCreateDto
+	var expenseDto request.ExpenseCreateDto
 	if err := ctx.ShouldBind(&expenseDto); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": http.StatusBadRequest,

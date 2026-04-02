@@ -17,7 +17,7 @@ import (
 	"lovers/internal/domain/repositories"
 	"lovers/internal/shared/infrastructure/logger"
 	ctxUserId "lovers/internal/shared/infrastructure/security/userid"
-	expenseDto "lovers/internal/usecases/dto/expense"
+	"lovers/internal/usecases/dto/expense/request"
 	eventhandler "lovers/internal/usecases/expense/subscriber"
 	"lovers/internal/usecases/port"
 	"lovers/internal/usecases/port/query"
@@ -34,11 +34,11 @@ func NewExpenseAdd(er repositories.ExpenseRepository, elr repositories.ExpenseLo
 	return &ExpenseAdd{expenseRepository: er, expenseLogRepository: elr, groupQueryService: gq, txManager: tm}
 }
 
-func (ec *ExpenseAdd) Execute(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
-	return ec.add(ctx, d)
+func (ea *ExpenseAdd) Execute(ctx context.Context, d *request.ExpenseCreateDto) error {
+	return ea.add(ctx, d)
 }
 
-func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) error {
+func (ea *ExpenseAdd) add(ctx context.Context, d *request.ExpenseCreateDto) error {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "明細作成処理を開始します。")
 
@@ -73,7 +73,7 @@ func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) e
 		return err
 	}
 
-	groupMembers, err := ec.groupQueryService.FindMemberById(ctx, groupId)
+	groupMembers, err := ea.groupQueryService.FindMemberById(ctx, groupId)
 	if err != nil {
 		l.ErrorContext(ctx, "グループメンバーの取得に失敗しました。", "error", err)
 		return err
@@ -113,13 +113,13 @@ func (ec *ExpenseAdd) add(ctx context.Context, d *expenseDto.ExpenseCreateDto) e
 		return err
 	}
 
-	return ec.txManager.WithTransaction(ctx, func(txCtx context.Context) error {
-		err := ec.expenseRepository.Add(txCtx, expense)
+	return ea.txManager.WithTransaction(ctx, func(txCtx context.Context) error {
+		err := ea.expenseRepository.Add(txCtx, expense)
 		if err != nil {
 			l.ErrorContext(ctx, "明細の追加に失敗しました。", "error", err)
 			return err
 		}
-		subscriber := eventhandler.NewExpenseAddedSubscriber(ec.expenseLogRepository)
+		subscriber := eventhandler.NewExpenseAddedSubscriber(ea.expenseLogRepository)
 		userId, err := userid.NewUserIdFromString(ctxUserId.FromContext(ctx))
 		if err != nil {
 			l.ErrorContext(ctx, "ユーザIDの生成に失敗しました。", "error", err)
