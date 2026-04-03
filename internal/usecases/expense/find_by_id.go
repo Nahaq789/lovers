@@ -3,6 +3,7 @@ package expense
 import (
 	"context"
 	"lovers/internal/domain/repositories"
+	"lovers/internal/shared/infrastructure/logger"
 )
 
 type ExpenseFindById struct {
@@ -15,6 +16,9 @@ func NewExpenseFindById(er repositories.ExpenseRepository) *ExpenseFindById {
 	}
 }
 
-func (ef *ExpenseFindById) Execute(ctx context.Context) error {
+func (ef *ExpenseFindById) Execute(ctx context.Context, expenseId) error {
+	l := logger.FromContext(ctx)
+	l.InfoContext(ctx, "明細取得処理を開始します。")
+
 	return nil
 }
