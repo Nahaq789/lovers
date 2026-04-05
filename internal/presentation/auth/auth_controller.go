@@ -2,7 +2,7 @@ package auth
 
 import (
 	auth_signup "lovers/internal/usecases/auth"
-	"lovers/internal/usecases/dto/auth"
+	"lovers/internal/usecases/dto/auth/request"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ func NewAuthController(s *auth_signup.SignUp) *AuthController {
 }
 
 func (a *AuthController) SignUp(ctx *gin.Context) {
-	var auth auth.SignUpDto
+	var auth request.SignUpDto
 	if err := ctx.ShouldBind(&auth); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": http.StatusBadRequest,
