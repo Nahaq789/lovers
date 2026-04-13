@@ -19,27 +19,28 @@ func NewExpenseFindById(er repositories.ExpenseRepository) *ExpenseFindById {
 	}
 }
 
-func (ef *ExpenseFindById) Execute(ctx context.Context, expenseId, targetUserId string) (*response.ExpenseResponse, error) {
+func (ef *ExpenseFindById) Execute(ctx context.Context, expenseId, targetUserId string) (response.ExpenseResponse, error) {
 	l := logger.FromContext(ctx)
 	l.InfoContext(ctx, "明細取得処理を開始します。")
 
 	e, err := expenseid.NewExpenseIdFromString(expenseId)
 	if err != nil {
 		l.ErrorContext(ctx, "明細IDの生成に失敗しました。", "error", err)
-		return nil, err
+		return response.ExpenseResponse{}, err
 	}
 
 	t, err := userid.NewUserIdFromString(targetUserId)
 	if err != nil {
 		l.ErrorContext(ctx, "ユーザIDの生成に失敗しました。", "error", err)
-		return nil, err
+		return response.ExpenseResponse{}, err
 	}
 
 	aggregate, err := ef.expenseRepository.FindById(ctx, e, t)
 	if err != nil {
 		l.ErrorContext(ctx, "明細の取得に失敗しました。", "error", err)
-		return nil, err
+		return response.ExpenseResponse{}, err
 	}
 
-	return nil, nil
+	res := response.NewExpenseResponse(aggregate)
+	return res, nil
 }

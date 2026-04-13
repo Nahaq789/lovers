@@ -24,7 +24,7 @@ type ExpenseAggregate struct {
 	expenseId    expenseid.ExpenseId
 	groupId      groupid.GroupId
 	categoryId   categoryid.CategoryId
-	amount       amount.Amount
+	total        amount.Amount
 	paymentUsers *paymentdetail.PaymentUsers
 	nominal      nominal.Nominal
 	paymentDate  paymentdate.PaymentDate
@@ -54,7 +54,7 @@ func NewExpenseAggregate(
 		expenseId:    expenseId,
 		groupId:      groupId,
 		categoryId:   categoryId,
-		amount:       amount,
+		total:        amount,
 		paymentUsers: paymentUsers,
 		nominal:      nom,
 		paymentDate:  paymentDate,
@@ -104,6 +104,10 @@ func (ea *ExpenseAggregate) GetCreatedAt() createdat.CreatedAt {
 
 func (ea *ExpenseAggregate) GetUpdatedAt() updatedat.UpdatedAt {
 	return ea.updatedAt
+}
+
+func (ea *ExpenseAggregate) GetTotal() amount.Amount {
+	return ea.total
 }
 
 func (ea *ExpenseAggregate) Delete(e expenseid.ExpenseId) error {
