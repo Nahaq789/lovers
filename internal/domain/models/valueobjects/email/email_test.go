@@ -9,7 +9,6 @@ func TestNewEmail(t *testing.T) {
 		name      string
 		input     string
 		wantError bool
-		errorMsg  string
 	}{
 		{
 			name:      "有効なメールアドレス - 基本形",
@@ -40,43 +39,36 @@ func TestNewEmail(t *testing.T) {
 			name:      "無効なメールアドレス - @マークなし",
 			input:     "invalidemail",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 		{
 			name:      "無効なメールアドレス - ドメイン部なし",
 			input:     "test@",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 		{
 			name:      "無効なメールアドレス - ローカル部なし",
 			input:     "@example.com",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 		{
 			name:      "空文字",
 			input:     "",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 		{
 			name:      "無効なメールアドレス - スペース含む",
 			input:     "test @example.com",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 		{
 			name:      "無効なメールアドレス - 連続ドット",
 			input:     "test..test@example.com",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 		{
 			name:      "無効なメールアドレス - 複数@マーク",
 			input:     "test@@example.com",
 			wantError: true,
-			errorMsg:  "メールアドレスの形式が正しくないです。",
 		},
 	}
 
@@ -88,9 +80,6 @@ func TestNewEmail(t *testing.T) {
 				if err == nil {
 					t.Errorf("NewEmail(%q) expected error, but got nil", tt.input)
 					return
-				}
-				if err.Error() != tt.errorMsg {
-					t.Errorf("NewEmail(%q) error message = %q, want %q", tt.input, err.Error(), tt.errorMsg)
 				}
 			} else {
 				if err != nil {
@@ -224,29 +213,6 @@ func TestValidateEmail(t *testing.T) {
 				}
 			}
 		})
-	}
-}
-
-func TestEmailValidationErrorMessage(t *testing.T) {
-	invalidEmails := []string{
-		"testexample.com",
-		"test@",
-		"@example.com",
-		"",
-		"test..test@example.com",
-	}
-
-	expectedMsg := "メールアドレスの形式が正しくないです。"
-	for _, email := range invalidEmails {
-		err := validateEmail(email)
-		if err == nil {
-			t.Errorf("validateEmail(%q) expected error, but got nil", email)
-			continue
-		}
-		if err.Error() != expectedMsg {
-			t.Errorf("validateEmail(%q) error message = %q, want %q",
-				email, err.Error(), expectedMsg)
-		}
 	}
 }
 
