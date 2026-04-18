@@ -60,6 +60,31 @@ func TestNewPassword(t *testing.T) {
 			input:   "abc 123",
 			wantErr: true,
 		},
+		{
+			name:    "エラー：複数のスペース",
+			input:   "abc 123 456",
+			wantErr: true,
+		},
+		{
+			name:    "エラー：先頭にスペース",
+			input:   " abc123",
+			wantErr: true,
+		},
+		{
+			name:    "エラー：末尾にスペース",
+			input:   "abc123 ",
+			wantErr: true,
+		},
+		{
+			name:    "有効なパスワード（記号を含む）",
+			input:   "abc123!",
+			wantErr: false,
+		},
+		{
+			name:    "有効なパスワード（複数の記号）",
+			input:   "abc123!@#",
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -76,9 +101,38 @@ func TestNewPassword(t *testing.T) {
 					t.Errorf("NewPassword() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				if password.value != tt.input {
-					t.Errorf("NewPassword().value = %v, want %v", password.value, tt.input)
+				if password.GetValue() != tt.input {
+					t.Errorf("NewPassword().GetValue() = %v, want %v", password.GetValue(), tt.input)
 				}
+			}
+		})
+	}
+}
+
+func TestPasswordGetValue(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{
+			name:  "GetValueが正しい値を返す",
+			input: "abc123",
+		},
+		{
+			name:  "GetValueが長いパスワードを返す",
+			input: "this_is_a_very_long_password_with_numbers_123456789",
+		},
+		{
+			name:  "GetValueが記号を含むパスワードを返す",
+			input: "abc123!@#",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			password, _ := NewPassword(tt.input)
+			if password.GetValue() != tt.input {
+				t.Errorf("Password.GetValue() = %v, want %v", password.GetValue(), tt.input)
 			}
 		})
 	}

@@ -84,3 +84,4 @@ yarn-error.log*
 .terraform.d/
 .terragrunt-cache/
 terraform-wrapper
+coverage*

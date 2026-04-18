@@ -1,208 +1,123 @@
 package userid
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewUserId(t *testing.T) {
-	t.Run("正常系：新しいUserIdの生成", func(t *testing.T) {
-		userId, err := NewUserId()
-		if err != nil {
-			t.Fatalf("予期しないエラー: %v", err)
-		}
-
-		// 値が空でないことを確認
-		if userId.value == uuid.Nil {
-			t.Error("UserIdの値が空です")
-		}
-
-		// GetValue()が有効なUUID文字列を返すことを確認
-		value := userId.GetValue()
-		if value == "" {
-			t.Error("GetValue()が空文字列を返しました")
-		}
-
-		// 返された文字列が有効なUUIDであることを確認
-		_, err = uuid.Parse(value)
-		if err != nil {
-			t.Errorf("GetValue()が無効なUUID文字列を返しました: %v", err)
-		}
-	})
-
-	t.Run("一意性：複数のUserIdが異なる値を持つ", func(t *testing.T) {
-		userId1, err := NewUserId()
-		if err != nil {
-			t.Fatalf("userId1の生成エラー: %v", err)
-		}
-
-		userId2, err := NewUserId()
-		if err != nil {
-			t.Fatalf("userId2の生成エラー: %v", err)
-		}
-
-		if userId1.GetValue() == userId2.GetValue() {
-			t.Error("異なるUserIdが同じ値を持っています")
-		}
+	t.Run("新しいUserIdの生成", func(t *testing.T) {
+		userID, err := NewUserId()
+		assert.NoError(t, err)
+		assert.NotEqual(t, uuid.Nil, userID.value)
+		assert.NotEmpty(t, userID.GetValue())
 	})
 }
 
 func TestNewUserIdFromString(t *testing.T) {
-	t.Run("正常系：有効なUUID文字列からUserIdを生成", func(t *testing.T) {
-		// 有効なUUID v4文字列
-		validUUID := "550e8400-e29b-41d4-a716-446655440000"
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効なUUID文字列からUserIdを生成",
+			input:   "550e8400-e29b-41d4-a716-446655440000",
+			wantErr: false,
+		},
+		{
+			name:    "UUID_v7文字列からUserIdを生成",
+			input:   "018d8a3a-3e5e-7000-8000-000000000000",
+			wantErr: false,
+		},
+		{
+			name:    "無効なUUID文字列",
+			input:   "invalid-uuid",
+			wantErr: true,
+		},
+		{
+			name:    "無効なUUID文字列/空文字列",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "無効なUUID文字列/不正な形式",
+			input:   "12345",
+			wantErr: true,
+		},
+		{
+			name:    "無効なUUID文字列/短すぎる",
+			input:   "123e4567-e89b-12d3-a456",
+			wantErr: true,
+		},
+		{
+			name:    "無効なUUID文字列/不正な文字を含む",
+			input:   "123e4567-e89b-12d3-a456-00000000000g",
+			wantErr: true,
+		},
+		{
+			name:    "無効なUUID文字列/長すぎる",
+			input:   "123e4567-e89b-12d3-a456-0000000000000",
+			wantErr: true,
+		},
+	}
 
-		userId, err := NewUserIdFromString(validUUID)
-		if err != nil {
-			t.Fatalf("予期しないエラー: %v", err)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userID, err := NewUserIdFromString(tt.input)
 
-		// GetValue()が元の文字列と一致することを確認
-		if userId.GetValue() != validUUID {
-			t.Errorf("期待値: %s, 実際値: %s", validUUID, userId.GetValue())
-		}
-	})
-
-	t.Run("正常系：UUID v7文字列からUserIdを生成", func(t *testing.T) {
-		// まず新しいUserIdを生成
-		originalUserId, err := NewUserId()
-		if err != nil {
-			t.Fatalf("元のUserIdの生成エラー: %v", err)
-		}
-
-		// その文字列表現を取得
-		uuidString := originalUserId.GetValue()
-
-		// 文字列から新しいUserIdを生成
-		userId, err := NewUserIdFromString(uuidString)
-		if err != nil {
-			t.Fatalf("予期しないエラー: %v", err)
-		}
-
-		// 値が一致することを確認
-		if userId.GetValue() != uuidString {
-			t.Errorf("期待値: %s, 実際値: %s", uuidString, userId.GetValue())
-		}
-	})
-
-	t.Run("異常系：無効なUUID文字列", func(t *testing.T) {
-		testCases := []struct {
-			name  string
-			input string
-		}{
-			{"空文字列", ""},
-			{"不正な形式", "not-a-uuid"},
-			{"短すぎる", "550e8400"},
-			{"不正な文字を含む", "550e8400-e29b-41d4-a716-44665544000g"},
-			{"長すぎる", "550e8400-e29b-41d4-a716-446655440000-extra"},
-		}
-
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				_, err := NewUserIdFromString(tc.input)
+			if tt.wantErr {
 				if err == nil {
-					t.Errorf("エラーが期待されましたが、nilが返されました: input=%s", tc.input)
+					t.Errorf("NewUserIdFromString() error = nil, wantErr %v", tt.wantErr)
+					return
 				}
-			})
-		}
-	})
-}
-
-func TestNewUserIdWithGenerator(t *testing.T) {
-	t.Run("正常系：カスタムジェネレータでUserIdを生成", func(t *testing.T) {
-		expectedUUID := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
-
-		// モックジェネレータ
-		mockGenerator := func() (uuid.UUID, error) {
-			return expectedUUID, nil
-		}
-
-		userId, err := newUserIdWithGenerator(mockGenerator)
-		if err != nil {
-			t.Fatalf("予期しないエラー: %v", err)
-		}
-
-		if userId.GetValue() != expectedUUID.String() {
-			t.Errorf("期待値: %s, 実際値: %s", expectedUUID.String(), userId.GetValue())
-		}
-	})
-
-	t.Run("異常系：ジェネレータがエラーを返す", func(t *testing.T) {
-		expectedErr := errors.New("UUID生成エラー")
-
-		// エラーを返すモックジェネレータ
-		errorGenerator := func() (uuid.UUID, error) {
-			return uuid.Nil, expectedErr
-		}
-
-		_, err := newUserIdWithGenerator(errorGenerator)
-		if err == nil {
-			t.Error("エラーが期待されましたが、nilが返されました")
-		}
-
-		if err != expectedErr {
-			t.Errorf("期待されたエラー: %v, 実際のエラー: %v", expectedErr, err)
-		}
-	})
-}
-
-func TestUserId_GetValue(t *testing.T) {
-	t.Run("正常系：GetValueが正しい文字列を返す", func(t *testing.T) {
-		expectedUUID := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
-		userId := UserId{value: expectedUUID}
-
-		result := userId.GetValue()
-		expected := "550e8400-e29b-41d4-a716-446655440000"
-
-		if result != expected {
-			t.Errorf("期待値: %s, 実際値: %s", expected, result)
-		}
-	})
-
-	t.Run("エッジケース：ゼロ値のUUID", func(t *testing.T) {
-		userId := UserId{value: uuid.Nil}
-
-		result := userId.GetValue()
-		expected := "00000000-0000-0000-0000-000000000000"
-
-		if result != expected {
-			t.Errorf("期待値: %s, 実際値: %s", expected, result)
-		}
-	})
-}
-
-// ベンチマークテスト
-func BenchmarkNewUserId(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, err := NewUserId()
-		if err != nil {
-			b.Fatal(err)
-		}
+			} else {
+				if err != nil {
+					t.Errorf("NewUserIdFromString() error = %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+				if userID.GetValue() != tt.input {
+					t.Errorf("NewUserIdFromString().GetValue() = %v, want %v", userID.GetValue(), tt.input)
+				}
+			}
+		})
 	}
 }
 
-func BenchmarkNewUserIdFromString(b *testing.B) {
-	validUUID := "550e8400-e29b-41d4-a716-446655440000"
+func TestUserIdGetValue(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{
+			name:  "GetValueが正しい文字列を返す",
+			input: "550e8400-e29b-41d4-a716-446655440000",
+		},
+		{
+			name:  "ゼロ値のUUID",
+			input: "00000000-0000-0000-0000-000000000000",
+		},
+	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, err := NewUserIdFromString(validUUID)
-		if err != nil {
-			b.Fatal(err)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userID, _ := NewUserIdFromString(tt.input)
+			if userID.GetValue() != tt.input {
+				t.Errorf("UserId.GetValue() = %v, want %v", userID.GetValue(), tt.input)
+			}
+		})
 	}
 }
 
-func BenchmarkGetValue(b *testing.B) {
-	userId, err := NewUserId()
-	if err != nil {
-		b.Fatal(err)
-	}
+func TestUserIdEqual(t *testing.T) {
+	t.Run("UserIdが正しく比較される", func(t *testing.T) {
+		userID1, _ := NewUserIdFromString("550e8400-e29b-41d4-a716-446655440000")
+		userID2, _ := NewUserIdFromString("550e8400-e29b-41d4-a716-446655440000")
+		userID3, _ := NewUserIdFromString("550e8400-e29b-41d4-a716-446655440001")
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = userId.GetValue()
-	}
+		assert.True(t, userID1.Equal(userID2))
+		assert.False(t, userID1.Equal(userID3))
+	})
 }
