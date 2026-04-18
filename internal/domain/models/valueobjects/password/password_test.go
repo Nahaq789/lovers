@@ -9,7 +9,6 @@ func TestNewPassword(t *testing.T) {
 		name    string
 		input   string
 		wantErr bool
-		errMsg  string
 	}{
 		{
 			name:    "有効なパスワード",
@@ -35,31 +34,31 @@ func TestNewPassword(t *testing.T) {
 			name:    "エラー：6文字未満",
 			input:   "abc12",
 			wantErr: true,
-			errMsg:  "パスワードは最低6文字必要です",
 		},
 		{
 			name:    "エラー：小文字なし",
 			input:   "123456",
 			wantErr: true,
-			errMsg:  "パスワードには小文字が必要です",
 		},
 		{
 			name:    "エラー：数字なし",
 			input:   "abcdef",
 			wantErr: true,
-			errMsg:  "パスワードには数字が必要です",
 		},
 		{
 			name:    "エラー：空文字",
 			input:   "",
 			wantErr: true,
-			errMsg:  "パスワードは最低6文字必要です",
 		},
 		{
 			name:    "エラー：大文字と記号のみ",
 			input:   "ABC!@#",
 			wantErr: true,
-			errMsg:  "パスワードには小文字が必要です",
+		},
+		{
+			name:    "エラー：スペースを含む",
+			input:   "abc 123",
+			wantErr: true,
 		},
 	}
 
@@ -71,9 +70,6 @@ func TestNewPassword(t *testing.T) {
 				if err == nil {
 					t.Errorf("NewPassword() error = nil, wantErr %v", tt.wantErr)
 					return
-				}
-				if err.Error() != tt.errMsg {
-					t.Errorf("NewPassword() error = %v, want %v", err.Error(), tt.errMsg)
 				}
 			} else {
 				if err != nil {

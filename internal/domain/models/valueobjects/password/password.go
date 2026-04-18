@@ -3,6 +3,12 @@ package password
 import (
 	"errors"
 	"regexp"
+	"strings"
+)
+
+var (
+	lowerRegex  = regexp.MustCompile(`[a-z]`)
+	numberRegex = regexp.MustCompile(`[0-9]`)
 )
 
 type Password struct {
@@ -21,17 +27,19 @@ func (p Password) GetValue() string {
 }
 
 func validatePassword(v string) error {
-	if len(v) < 6 {
+	if strings.ContainsRune(v, ' ') {
+		return errors.New("password must not contain spaces")
+	}
+
+	if len([]rune(v)) < 6 {
 		return errors.New("password must be at least 6 characters")
 	}
 
-	matched, _ := regexp.MatchString(`[a-z]`, v)
-	if !matched {
+	if !lowerRegex.MatchString(v) {
 		return errors.New("password must contain at least one lowercase letter")
 	}
 
-	matched, _ = regexp.MatchString(`[0-9]`, v)
-	if !matched {
+	if !numberRegex.MatchString(v) {
 		return errors.New("password must contain at least one number")
 	}
 
